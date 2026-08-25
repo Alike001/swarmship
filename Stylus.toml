@@ -1,0 +1,5 @@
+[workspace]
+networks = {}
+
+[workspace.contracts.agent-task-registry]
+path = "contracts/agent-task-registry"

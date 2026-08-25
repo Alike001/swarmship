@@ -2,13 +2,24 @@ import { readdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 
 const root = process.cwd();
-const publicRoots = ["apps", "packages", "scripts", "tests", ".github"];
+const publicRoots = [
+  "apps",
+  "contracts",
+  "packages",
+  "scripts",
+  "tests",
+  ".github",
+];
 const rootFiles = [
   ".gitignore",
+  "Cargo.lock",
+  "Cargo.toml",
+  "Stylus.toml",
   "package.json",
   "playwright.config.ts",
   "pnpm-lock.yaml",
   "pnpm-workspace.yaml",
+  "rust-toolchain.toml",
   "tsconfig.base.json",
 ];
 const excludedDirectories = new Set(["coverage", "dist", "node_modules"]);

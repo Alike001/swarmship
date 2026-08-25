@@ -8,6 +8,7 @@
 # JavaScript and frontend output
 node_modules/
 .pnpm-store/
+.tmp/
 dist/
 coverage/
 playwright-report/

@@ -2,8 +2,8 @@ import { readdir, readFile } from "node:fs/promises";
 import { extname, join, relative } from "node:path";
 
 const root = process.cwd();
-const sourceRoots = ["apps", "packages", "scripts", "tests"];
-const sourceExtensions = new Set([".css", ".mjs", ".ts", ".tsx"]);
+const sourceRoots = ["apps", "contracts", "packages", "scripts", "tests"];
+const sourceExtensions = new Set([".css", ".mjs", ".rs", ".ts", ".tsx"]);
 const excludedDirectories = new Set(["coverage", "dist", "node_modules"]);
 const warningLimit = 200;
 const hardLimit = 300;
