@@ -24,6 +24,7 @@ describe("persisted transition effects", () => {
       SET state = 'awaiting_approval',
           version = 5,
           build_evidence = ${testDatabase.json({ artifactHash: EVIDENCE })},
+          verification_evidence = ${testDatabase.json({ evidenceRef: EVIDENCE })},
           manifest_approval = ${testDatabase.json({ signature: "0xsigned" })}
       WHERE id = ${release.id}
     `;
@@ -45,6 +46,7 @@ describe("persisted transition effects", () => {
       version: 6,
       buildEvidence: null,
       manifestApproval: null,
+      verificationEvidence: null,
     });
   });
 });

@@ -1,47 +1,53 @@
-import { validateBuildEvidence } from "@swarmship/builder";
 import { applyReleaseTransition } from "@swarmship/domain/release";
+import { validateVerificationEvidence } from "@swarmship/verifier";
 
 import type { Database } from "./database.js";
 import { PersistenceError } from "./errors.js";
 import type {
-  BuildResultInput,
   ReleaseRow,
   ReleaseTransitionRow,
+  VerificationResultInput,
 } from "./types.js";
 
-function validateBuildResult(input: BuildResultInput, current: ReleaseRow) {
+function validateResult(input: VerificationResultInput, current: ReleaseRow) {
   const summary = input.summary.trim();
+  const expectedEvent =
+    input.evidence.status === "passed"
+      ? "verification_passed"
+      : "verification_failed";
   if (
     summary.length < 1 ||
     summary.length > 600 ||
-    input.command.actor !== "build" ||
-    input.command.event !== "build_started" ||
+    input.command.actor !== "verification" ||
+    input.command.event !== expectedEvent ||
     input.command.evidenceRef !== input.evidence.evidenceRef ||
-    current.specification === null
+    current.specification === null ||
+    current.buildEvidence === null
   ) {
     throw new PersistenceError(
       "transition_rejected",
-      "The build result is incomplete or inconsistent.",
+      "The verification result is incomplete or inconsistent.",
     );
   }
   try {
-    return validateBuildEvidence(
+    return validateVerificationEvidence(
       input.evidence,
+      current.buildEvidence,
       current.specification,
       input.nowUnixSeconds,
     );
   } catch {
     throw new PersistenceError(
       "transition_rejected",
-      "The build evidence does not match the accepted specification.",
+      "The verification evidence does not match the accepted build.",
     );
   }
 }
 
-export class BuildRepository {
+export class VerificationRepository {
   constructor(private readonly database: Database) {}
 
-  async record(input: BuildResultInput): Promise<ReleaseTransitionRow> {
+  async record(input: VerificationResultInput): Promise<ReleaseTransitionRow> {
     return this.database.begin(async (transaction) => {
       const [current] = await transaction<ReleaseRow[]>`
         SELECT * FROM releases WHERE id = ${input.releaseId}
@@ -49,7 +55,7 @@ export class BuildRepository {
       if (current === undefined) {
         throw new PersistenceError("release_not_found", "Release not found.");
       }
-      const evidence = validateBuildResult(input, current);
+      const evidence = validateResult(input, current);
       const result = applyReleaseTransition(
         {
           state: current.state,
@@ -67,8 +73,7 @@ export class BuildRepository {
         SET state = ${result.snapshot.state},
             version = ${result.snapshot.version},
             reconciliation_kind = ${result.snapshot.reconciliation},
-            build_evidence = ${transaction.json(evidence)},
-            verification_evidence = NULL,
+            verification_evidence = ${transaction.json(evidence)},
             safe_error = NULL,
             lease_owner = NULL,
             lease_token = NULL,
@@ -97,17 +102,22 @@ export class BuildRepository {
           ${input.releaseId}, ${result.record.versionBefore}, ${result.record.versionAfter},
           ${result.record.actor}, ${result.record.event}, ${result.record.from},
           ${result.record.to}, ${result.record.evidenceRef},
-          ${transaction.json(result.record.effects)}, ${"render_task_registry"},
+          ${transaction.json(result.record.effects)}, ${"run_release_verification"},
           ${input.summary.trim()}, ${transaction.json({
-            sourceHash: evidence.sourceHash,
-            templateVersion: evidence.templateVersion,
-            testInputHash: evidence.testInputHash,
+            artifactHash: evidence.artifactHash,
+            checks: evidence.checks.map(({ name, status }) => ({
+              name,
+              status,
+            })),
+            status: evidence.status,
+            testEvidenceHash: evidence.testEvidenceHash,
+            toolchainHash: evidence.toolchainHash,
           })}
         )
         RETURNING *
       `;
       if (record === undefined) {
-        throw new Error("Build transition insert returned no row.");
+        throw new Error("Verification transition insert returned no row.");
       }
       return record;
     });

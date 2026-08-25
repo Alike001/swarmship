@@ -1,4 +1,8 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["src/**/*.test.ts", "src/live-build-smoke.ts"]
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/live-build-smoke.ts",
+    "src/live-verification-smoke.ts"
+  ]
 }

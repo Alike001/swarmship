@@ -8,6 +8,7 @@ import type {
 } from "@swarmship/domain/release";
 import type { BuildEvidenceV1 } from "@swarmship/builder";
 import type { ReleaseState } from "@swarmship/domain";
+import type { VerificationEvidenceV1 } from "@swarmship/verifier";
 
 export type ReleaseRow = {
   id: string;
@@ -20,6 +21,7 @@ export type ReleaseRow = {
   specificationSummary: string | null;
   missingFields: string[] | null;
   buildEvidence: BuildEvidenceV1 | null;
+  verificationEvidence: VerificationEvidenceV1 | null;
   manifestApproval: unknown | null;
   safeError: unknown | null;
   leaseOwner: string | null;
@@ -88,6 +90,16 @@ export type SpecificationResultInput = {
 export type BuildResultInput = {
   command: ReleaseTransitionCommand;
   evidence: BuildEvidenceV1;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type VerificationResultInput = {
+  command: ReleaseTransitionCommand;
+  evidence: VerificationEvidenceV1;
   leaseToken: string;
   nowUnixSeconds: number;
   releaseId: string;

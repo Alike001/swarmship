@@ -103,6 +103,7 @@ export class ReleaseRepository {
             version = ${result.snapshot.version},
             reconciliation_kind = ${result.snapshot.reconciliation},
             build_evidence = CASE WHEN ${invalidateBuild} THEN NULL ELSE build_evidence END,
+            verification_evidence = CASE WHEN ${invalidateBuild} THEN NULL ELSE verification_evidence END,
             manifest_approval = CASE WHEN ${invalidateApproval} THEN NULL ELSE manifest_approval END,
             updated_at = clock_timestamp()
         WHERE id = ${releaseId} AND version = ${result.record.versionBefore}

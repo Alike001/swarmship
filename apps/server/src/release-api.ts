@@ -80,6 +80,19 @@ function presentRelease(release: ReleaseRow) {
           templateVersion: release.buildEvidence.templateVersion,
           testInputHash: release.buildEvidence.testInputHash,
         };
+  const verification =
+    release.verificationEvidence === null
+      ? null
+      : {
+          artifactHash: release.verificationEvidence.artifactHash,
+          checks: release.verificationEvidence.checks.map(
+            ({ name, status }) => ({ name, status }),
+          ),
+          evidenceRef: release.verificationEvidence.evidenceRef,
+          status: release.verificationEvidence.status,
+          testEvidenceHash: release.verificationEvidence.testEvidenceHash,
+          toolchainHash: release.verificationEvidence.toolchainHash,
+        };
   return {
     build,
     createdAt: release.createdAt.toISOString(),
@@ -98,6 +111,7 @@ function presentRelease(release: ReleaseRow) {
     specificationSummary: release.specificationSummary,
     state: release.state,
     updatedAt: release.updatedAt.toISOString(),
+    verification,
     version: release.version,
   };
 }

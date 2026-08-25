@@ -1,5 +1,5 @@
 {
-  "name": "@swarmship/persistence",
+  "name": "@swarmship/verifier",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,13 +12,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "vitest run --no-file-parallelism",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@swarmship/builder": "workspace:^",
     "@swarmship/domain": "workspace:^",
-    "@swarmship/verifier": "workspace:^",
-    "postgres": "3.4.9"
+    "zod": "4.4.3"
   }
 }

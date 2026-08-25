@@ -138,6 +138,48 @@ describe("persisted release API", () => {
     expect(JSON.stringify(result)).not.toContain("sourceFiles");
   });
 
+  it("exposes verification proof without returning artifact bytes", async () => {
+    const created = await postRelease(
+      "release-verification-evidence",
+      "Create and verify a bounded registry for approved agents.",
+    );
+    const body = (await created.json()) as {
+      release: { releaseId: string };
+    };
+    const evidence = {
+      artifactBase64: "cHJpdmF0ZS13YXNt",
+      artifactHash: `0x${"4".repeat(64)}`,
+      checks: [{ name: "rust_tests", status: "passed" }],
+      evidenceRef: `0x${"5".repeat(64)}`,
+      status: "passed",
+      testEvidenceHash: `0x${"6".repeat(64)}`,
+      toolchain: { rustc: "private tool details" },
+      toolchainHash: `0x${"7".repeat(64)}`,
+    };
+    await testDatabase`
+      UPDATE releases
+      SET verification_evidence = ${testDatabase.json(evidence)}
+      WHERE id = ${body.release.releaseId}
+    `;
+
+    const read = await app.request(`/api/releases/${body.release.releaseId}`);
+    const result = (await read.json()) as { release: unknown };
+
+    expect(result.release).toMatchObject({
+      verification: {
+        artifactHash: evidence.artifactHash,
+        checks: evidence.checks,
+        evidenceRef: evidence.evidenceRef,
+        status: "passed",
+        testEvidenceHash: evidence.testEvidenceHash,
+        toolchainHash: evidence.toolchainHash,
+      },
+    });
+    expect(JSON.stringify(result)).not.toContain("artifactBase64");
+    expect(JSON.stringify(result)).not.toContain("private-wasm");
+    expect(JSON.stringify(result)).not.toContain("private tool details");
+  });
+
   it("rejects idempotency-key reuse for changed input", async () => {
     await postRelease(
       "conflicting-create",

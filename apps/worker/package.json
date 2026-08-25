@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:live:build": "node --conditions=development --env-file=.env --import tsx src/live-build-smoke.ts",
+    "test:live:verification": "node --conditions=development --env-file=.env --import tsx src/live-verification-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
@@ -16,7 +17,8 @@
     "@swarmship/agents": "workspace:^",
     "@swarmship/builder": "workspace:^",
     "@swarmship/domain": "workspace:^",
-    "@swarmship/persistence": "workspace:^"
+    "@swarmship/persistence": "workspace:^",
+    "@swarmship/verifier": "workspace:^"
   },
   "devDependencies": {
     "tsx": "4.23.12"

@@ -13,11 +13,13 @@ import {
   LeaseRepository,
   runMigrations,
   SpecificationRepository,
+  VerificationRepository,
 } from "@swarmship/persistence";
 
 import { processOneBuild } from "./build-processor.js";
 import { getWorkerHealth } from "./health.js";
 import { processOneSpecification } from "./specification-processor.js";
+import { processOneVerification } from "./verification-processor.js";
 
 const unavailableTool = async (): Promise<never> => {
   throw new Error("This worker slice cannot run that agent tool yet.");
@@ -57,6 +59,7 @@ const agents = createSwarmShipAgents({
 const builds = new BuildRepository(database);
 const leases = new LeaseRepository(database);
 const specifications = new SpecificationRepository(database);
+const verifications = new VerificationRepository(database);
 const workerId = `worker-${randomUUID()}`;
 const shutdown = new AbortController();
 process.once("SIGINT", () => shutdown.abort());
@@ -88,10 +91,23 @@ try {
               workerId,
             })
           : { status: "idle" as const };
+      const verificationResult =
+        result.status === "idle" && buildResult.status === "idle"
+          ? await processOneVerification({
+              leaseSeconds: environment.WORKER_LEASE_SECONDS,
+              leases,
+              model: configuredModel.model,
+              retrySeconds: environment.WORKER_RETRY_SECONDS,
+              verifications,
+              workerId,
+            })
+          : { status: "idle" as const };
       if (result.status !== "idle") {
         console.log("SwarmShip worker step", result);
       } else if (buildResult.status !== "idle") {
         console.log("SwarmShip worker step", buildResult);
+      } else if (verificationResult.status !== "idle") {
+        console.log("SwarmShip worker step", verificationResult);
       }
     } catch (error) {
       console.error("SwarmShip worker loop error", {
