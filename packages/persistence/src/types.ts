@@ -2,6 +2,8 @@ import type {
   ReconciliationKind,
   ReleaseActor,
   ReleaseEvent,
+  ManifestApprovalV1,
+  ReleaseManifestV1,
   ReleaseTransitionCommand,
   ReleaseTransitionEffect,
   TaskRegistrySpecV1,
@@ -22,7 +24,7 @@ export type ReleaseRow = {
   missingFields: string[] | null;
   buildEvidence: BuildEvidenceV1 | null;
   verificationEvidence: VerificationEvidenceV1 | null;
-  manifestApproval: unknown | null;
+  manifestApproval: ManifestApprovalV1 | null;
   safeError: unknown | null;
   leaseOwner: string | null;
   leaseToken: string | null;
@@ -105,4 +107,26 @@ export type VerificationResultInput = {
   releaseId: string;
   summary: string;
   workerId: string;
+};
+
+export type ReleaseApprovalRequest = {
+  digest: `0x${string}`;
+  manifest: ReleaseManifestV1;
+  summary: ReturnType<
+    typeof import("@swarmship/domain/release").summarizeReleaseManifest
+  >;
+};
+
+export type ApproveReleaseInput = {
+  expectedVersion: number;
+  nowUnixSeconds: number;
+  releaseId: string;
+  signature: unknown;
+};
+
+export type ApproveReleaseResult = {
+  approval: ManifestApprovalV1;
+  created: boolean;
+  release: ReleaseRow;
+  transition: ReleaseTransitionRow | null;
 };

@@ -1,4 +1,5 @@
 export type PersistenceErrorCode =
+  | "approval_conflict"
   | "idempotency_conflict"
   | "release_not_found"
   | "transition_rejected"

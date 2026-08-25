@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
+  ApprovalRepository,
   closeDatabase,
   createDatabase,
   ReleaseRepository,
@@ -40,7 +41,10 @@ beforeAll(async () => {
     searchPath: schema,
   });
   await runMigrations(testDatabase);
-  app = createApp({ releases: new ReleaseRepository(testDatabase) });
+  app = createApp({
+    approvals: new ApprovalRepository(testDatabase),
+    releases: new ReleaseRepository(testDatabase),
+  });
 });
 
 beforeEach(async () => {

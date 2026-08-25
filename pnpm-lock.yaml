@@ -47,6 +47,9 @@ importers:
       tsx:
         specifier: 4.23.12
         version: 4.23.12
+      viem:
+        specifier: 2.55.19
+        version: 2.55.19(typescript@7.0.2)(zod@4.4.3)
 
   apps/web:
     dependencies:
@@ -159,6 +162,10 @@ importers:
       postgres:
         specifier: 3.4.9
         version: 3.4.9
+    devDependencies:
+      viem:
+        specifier: 2.55.19
+        version: 2.55.19(typescript@7.0.2)(zod@4.4.3)
 
   packages/verifier:
     dependencies:

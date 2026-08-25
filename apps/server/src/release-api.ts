@@ -10,6 +10,12 @@ import type {
   ReleaseTransitionRow,
 } from "@swarmship/persistence";
 
+import {
+  isJsonRequest,
+  jsonError,
+  releaseIdSchema,
+} from "./http-validation.js";
+
 export type ReleaseStore = Pick<
   ReleaseRepository,
   "create" | "get" | "listTransitions"
@@ -23,27 +29,10 @@ const idempotencyKeySchema = z
   .min(8)
   .max(128)
   .regex(/^[A-Za-z0-9._:-]+$/);
-const releaseIdSchema = z
-  .string()
-  .regex(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-  );
 const safeErrorSchema = z.strictObject({
   code: z.string().min(1).max(80),
   message: z.string().min(1).max(300),
 });
-
-function jsonError(code: string, message: string) {
-  return { error: { code, message } };
-}
-
-function isJsonRequest(contentType: string | undefined): boolean {
-  if (contentType === undefined) return false;
-  const mediaType = contentType.split(";", 1)[0]?.trim().toLowerCase();
-  return (
-    mediaType === "application/json" || mediaType?.endsWith("+json") === true
-  );
-}
 
 function requestHash(request: string): `0x${string}` {
   const digest = createHash("sha256")
@@ -93,11 +82,20 @@ function presentRelease(release: ReleaseRow) {
           testEvidenceHash: release.verificationEvidence.testEvidenceHash,
           toolchainHash: release.verificationEvidence.toolchainHash,
         };
+  const approval =
+    release.manifestApproval === null
+      ? null
+      : {
+          approvedAt: release.manifestApproval.approvedAt,
+          digest: release.manifestApproval.digest,
+          signer: release.manifestApproval.signer,
+        };
   return {
+    approval,
     build,
     createdAt: release.createdAt.toISOString(),
     links: {
-      approval: `/releases/${release.id}/approve`,
+      approval: `/api/releases/${release.id}/approval`,
       proof: `/proof/${release.publicId}`,
       self: `/api/releases/${release.id}`,
     },

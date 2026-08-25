@@ -20,5 +20,8 @@
     "@swarmship/domain": "workspace:^",
     "@swarmship/verifier": "workspace:^",
     "postgres": "3.4.9"
+  },
+  "devDependencies": {
+    "viem": "2.55.19"
   }
 }

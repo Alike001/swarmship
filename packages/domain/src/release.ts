@@ -1,4 +1,13 @@
 export {
+  createReleaseManifest,
+  manifestApprovalSchema,
+  summarizeReleaseManifest,
+  verifyManifestApproval,
+  type CreateReleaseManifestInput,
+  type ManifestApprovalResult,
+  type ManifestApprovalV1,
+} from "./release-approval.js";
+export {
   hashReleaseManifest,
   RELEASE_MANIFEST_DOMAIN,
   RELEASE_MANIFEST_TYPES,

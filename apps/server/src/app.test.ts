@@ -1,15 +1,20 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createApp } from "./app.js";
+import type { ApprovalStore } from "./approval-api.js";
 import type { ReleaseStore } from "./release-api.js";
 
 function testApp() {
+  const approvals: ApprovalStore = {
+    approve: vi.fn(),
+    getRequest: vi.fn(),
+  };
   const releases: ReleaseStore = {
     create: vi.fn(),
     get: vi.fn(),
     listTransitions: vi.fn(),
   };
-  return { app: createApp({ releases }), releases };
+  return { app: createApp({ approvals, releases }), approvals, releases };
 }
 
 describe("server routes", () => {
@@ -107,6 +112,10 @@ describe("server routes", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
     const app = createApp({
+      approvals: {
+        approve: vi.fn(),
+        getRequest: vi.fn(),
+      },
       releases: {
         create: vi.fn(),
         get,

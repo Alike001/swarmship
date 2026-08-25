@@ -3,9 +3,11 @@ import { Hono } from "hono";
 import { PRODUCT } from "@swarmship/domain";
 import { PersistenceError } from "@swarmship/persistence";
 
+import { registerApprovalRoutes, type ApprovalStore } from "./approval-api.js";
 import { registerReleaseRoutes, type ReleaseStore } from "./release-api.js";
 
 export type AppDependencies = {
+  approvals: ApprovalStore;
   releases: ReleaseStore;
 };
 
@@ -20,10 +22,18 @@ export function createApp(dependencies: AppDependencies) {
     }),
   );
   registerReleaseRoutes(app, dependencies.releases);
+  registerApprovalRoutes(app, dependencies.approvals);
 
   app.onError((error, context) => {
     if (error instanceof PersistenceError) {
-      const status = error.code === "idempotency_conflict" ? 409 : 400;
+      const status =
+        error.code === "release_not_found"
+          ? 404
+          : error.code === "idempotency_conflict" ||
+              error.code === "approval_conflict" ||
+              error.code === "transition_conflict"
+            ? 409
+            : 400;
       return context.json(
         { error: { code: error.code, message: error.message } },
         status,

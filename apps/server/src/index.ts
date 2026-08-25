@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 
 import { parseServerEnvironment } from "@swarmship/domain/environment";
 import {
+  ApprovalRepository,
   createDatabase,
   ReleaseRepository,
   runMigrations,
@@ -14,7 +15,10 @@ const database = createDatabase(environment.DATABASE_URL, {
   applicationName: "swarmship-server",
 });
 await runMigrations(database);
-const app = createApp({ releases: new ReleaseRepository(database) });
+const app = createApp({
+  approvals: new ApprovalRepository(database),
+  releases: new ReleaseRepository(database),
+});
 
 serve(
   {
