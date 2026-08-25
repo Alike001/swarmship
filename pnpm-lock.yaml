@@ -77,6 +77,22 @@ importers:
         specifier: 4.23.12
         version: 4.23.12
 
+  packages/agents:
+    dependencies:
+      "@openai/agents":
+        specifier: 0.17.0
+        version: 0.17.0(ws@8.21.0)(zod@4.4.3)
+      "@swarmship/domain":
+        specifier: workspace:^
+        version: link:../domain
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+    devDependencies:
+      tsx:
+        specifier: 4.23.12
+        version: 4.23.12
+
   packages/chain:
     dependencies:
       viem:
@@ -361,6 +377,20 @@ packages:
         integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==,
       }
 
+  "@modelcontextprotocol/client@2.0.0":
+    resolution:
+      {
+        integrity: sha512-8f1OghQ2rjzIOfqgUCP+8GiUWqRs89njoWLNqAe8kWmDePv3s1fZXseej+QXemssEuuOvLLmLO/kqM3IQHtISw==,
+      }
+    engines: { node: ">=20" }
+
+  "@modelcontextprotocol/core@2.0.0":
+    resolution:
+      {
+        integrity: sha512-pJCEwGG7Lfr/+PQp9ZTwKXNeO5wzbfKL7H3MYpCorM4oFBoQrdjnBgEoqG+RjhsvS1FKrDbKux+M1HhlnGWqcA==,
+      }
+    engines: { node: ">=20" }
+
   "@noble/ciphers@1.3.0":
     resolution:
       {
@@ -381,6 +411,41 @@ packages:
         integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==,
       }
     engines: { node: ^14.21.3 || >=16 }
+
+  "@openai/agents-core@0.17.0":
+    resolution:
+      {
+        integrity: sha512-lyoF860313ypeKSPRsdmyNK1ypF8/ocShN2EwCcKUpF4VvRWa5AUVKL6VXO/keQMwNPZw5SACAf1siU9uMvUNg==,
+      }
+    peerDependencies:
+      zod: ^4.0.0
+    peerDependenciesMeta:
+      zod:
+        optional: true
+
+  "@openai/agents-openai@0.17.0":
+    resolution:
+      {
+        integrity: sha512-pMqXK7YtNI3U9KLAZIt+WzB9AReOWt/kiY8nhc9eXWcIZIpkmrzFd6dQgBpGLKWPfvEfgRCDeIVfHpWoXr7hEg==,
+      }
+    peerDependencies:
+      zod: ^4.0.0
+
+  "@openai/agents-realtime@0.17.0":
+    resolution:
+      {
+        integrity: sha512-spHgDIaWQIOJjwowjBTo0X9Jn3+CGX9fWgsyRUilsQ8SsnNrAre2km6sr8HwFnRiyQC0XpmTccieyfuXmzMfXg==,
+      }
+    peerDependencies:
+      zod: ^4.0.0
+
+  "@openai/agents@0.17.0":
+    resolution:
+      {
+        integrity: sha512-yzJ3tfHLO/6um9wsZ5IzEAQDaY7VcDBMxOPq7IgBaJkEPHrGX0vIXWGL0aqyreikHW4OpVmWwCaBBIOxxILXlA==,
+      }
+    peerDependencies:
+      zod: ^4.0.0
 
   "@oxc-project/types@0.146.0":
     resolution:
@@ -784,6 +849,12 @@ packages:
         integrity: sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==,
       }
 
+  "@types/ws@8.18.1":
+    resolution:
+      {
+        integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==,
+      }
+
   "@typescript/typescript-aix-ppc64@7.0.2":
     resolution:
       {
@@ -1067,11 +1138,30 @@ packages:
         integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==,
       }
 
+  cross-spawn@7.0.6:
+    resolution:
+      {
+        integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==,
+      }
+    engines: { node: ">= 8" }
+
   csstype@3.2.3:
     resolution:
       {
         integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==,
       }
+
+  debug@4.4.3:
+    resolution:
+      {
+        integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==,
+      }
+    engines: { node: ">=6.0" }
+    peerDependencies:
+      supports-color: "*"
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
 
   detect-libc@2.1.2:
     resolution:
@@ -1105,6 +1195,20 @@ packages:
       {
         integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==,
       }
+
+  eventsource-parser@3.1.1:
+    resolution:
+      {
+        integrity: sha512-EKN1vKAMcZ8MlYMpaNuxN6R9yakzH6uajHcHVTqWJzvu5pWw9DyhbP35HH8MVBQ+dZjAfDxk+A8NiR9KWaXiyQ==,
+      }
+    engines: { node: ">=18.0.0" }
+
+  eventsource@3.0.7:
+    resolution:
+      {
+        integrity: sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==,
+      }
+    engines: { node: ">=18.0.0" }
 
   expect-type@1.4.0:
     resolution:
@@ -1148,6 +1252,12 @@ packages:
       }
     engines: { node: ">=16.9.0" }
 
+  isexe@2.0.0:
+    resolution:
+      {
+        integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==,
+      }
+
   isows@1.0.7:
     resolution:
       {
@@ -1155,6 +1265,12 @@ packages:
       }
     peerDependencies:
       ws: "*"
+
+  jose@6.2.10:
+    resolution:
+      {
+        integrity: sha512-iiW7J9qRFlGxvCOIBDBDxFePQSn7ZMAnrYGhrrOo6siO/MIqwfyilLR27pkfDgUk+raLuzADS8A3S/KLBisc0g==,
+      }
 
   lightningcss-android-arm64@1.33.0:
     resolution:
@@ -1272,6 +1388,12 @@ packages:
         integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==,
       }
 
+  ms@2.1.3:
+    resolution:
+      {
+        integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==,
+      }
+
   nanoid@3.3.18:
     resolution:
       {
@@ -1286,6 +1408,30 @@ packages:
         integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==,
       }
     engines: { node: ">=12.20.0" }
+
+  openai@7.5.0:
+    resolution:
+      {
+        integrity: sha512-ZbDBz8FSB8Mv8fFYIUvzTFMdV5vl93/octp1MdtK2lfYepSpfv/ewmeugpKz/cwGtFSx+YuUM4NwpZ2P55YiPA==,
+      }
+    engines: { node: ">=22.0.0" }
+    peerDependencies:
+      "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
+      "@smithy/hash-node": ">=4.3.0 <5"
+      "@smithy/signature-v4": ">=5.4.0 <6"
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      "@aws-sdk/credential-provider-node":
+        optional: true
+      "@smithy/hash-node":
+        optional: true
+      "@smithy/signature-v4":
+        optional: true
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   ox@0.14.34:
     resolution:
@@ -1314,6 +1460,13 @@ packages:
       vite-plus:
         optional: true
 
+  path-key@3.1.1:
+    resolution:
+      {
+        integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==,
+      }
+    engines: { node: ">=8" }
+
   pathe@2.0.3:
     resolution:
       {
@@ -1332,6 +1485,13 @@ packages:
         integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==,
       }
     engines: { node: ">=12" }
+
+  pkce-challenge@5.0.1:
+    resolution:
+      {
+        integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==,
+      }
+    engines: { node: ">=16.20.0" }
 
   playwright-core@1.61.0:
     resolution:
@@ -1399,6 +1559,20 @@ packages:
       {
         integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==,
       }
+
+  shebang-command@2.0.0:
+    resolution:
+      {
+        integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==,
+      }
+    engines: { node: ">=8" }
+
+  shebang-regex@3.0.0:
+    resolution:
+      {
+        integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==,
+      }
+    engines: { node: ">=8" }
 
   siginfo@2.0.0:
     resolution:
@@ -1575,6 +1749,14 @@ packages:
       jsdom:
         optional: true
 
+  which@2.0.2:
+    resolution:
+      {
+        integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==,
+      }
+    engines: { node: ">= 8" }
+    hasBin: true
+
   why-is-node-running@2.3.0:
     resolution:
       {
@@ -1691,6 +1873,22 @@ snapshots:
 
   "@jridgewell/sourcemap-codec@1.5.5": {}
 
+  "@modelcontextprotocol/client@2.0.0":
+    dependencies:
+      "@modelcontextprotocol/core": 2.0.0
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.1.1
+      jose: 6.2.10
+      pkce-challenge: 5.0.1
+      zod: 4.4.3
+    optional: true
+
+  "@modelcontextprotocol/core@2.0.0":
+    dependencies:
+      zod: 4.4.3
+    optional: true
+
   "@noble/ciphers@1.3.0": {}
 
   "@noble/curves@1.9.1":
@@ -1698,6 +1896,66 @@ snapshots:
       "@noble/hashes": 1.8.0
 
   "@noble/hashes@1.8.0": {}
+
+  "@openai/agents-core@0.17.0(ws@8.21.0)(zod@4.4.3)":
+    dependencies:
+      "@standard-schema/spec": 1.1.0
+      debug: 4.4.3
+      openai: 7.5.0(ws@8.21.0)(zod@4.4.3)
+    optionalDependencies:
+      "@modelcontextprotocol/client": 2.0.0
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - "@aws-sdk/credential-provider-node"
+      - "@smithy/hash-node"
+      - "@smithy/signature-v4"
+      - supports-color
+      - ws
+
+  "@openai/agents-openai@0.17.0(ws@8.21.0)(zod@4.4.3)":
+    dependencies:
+      "@openai/agents-core": 0.17.0(ws@8.21.0)(zod@4.4.3)
+      debug: 4.4.3
+      openai: 7.5.0(ws@8.21.0)(zod@4.4.3)
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - "@aws-sdk/credential-provider-node"
+      - "@smithy/hash-node"
+      - "@smithy/signature-v4"
+      - supports-color
+      - ws
+
+  "@openai/agents-realtime@0.17.0(zod@4.4.3)":
+    dependencies:
+      "@openai/agents-core": 0.17.0(ws@8.21.0)(zod@4.4.3)
+      "@types/ws": 8.18.1
+      debug: 4.4.3
+      ws: 8.21.0
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - "@aws-sdk/credential-provider-node"
+      - "@smithy/hash-node"
+      - "@smithy/signature-v4"
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  "@openai/agents@0.17.0(ws@8.21.0)(zod@4.4.3)":
+    dependencies:
+      "@openai/agents-core": 0.17.0(ws@8.21.0)(zod@4.4.3)
+      "@openai/agents-openai": 0.17.0(ws@8.21.0)(zod@4.4.3)
+      "@openai/agents-realtime": 0.17.0(zod@4.4.3)
+      debug: 4.4.3
+      openai: 7.5.0(ws@8.21.0)(zod@4.4.3)
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - "@aws-sdk/credential-provider-node"
+      - "@smithy/hash-node"
+      - "@smithy/signature-v4"
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+      - ws
 
   "@oxc-project/types@0.146.0": {}
 
@@ -1845,6 +2103,10 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
+  "@types/ws@8.18.1":
+    dependencies:
+      "@types/node": 24.13.3
+
   "@typescript/typescript-aix-ppc64@7.0.2":
     optional: true
 
@@ -1962,7 +2224,18 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
+  cross-spawn@7.0.6:
+    dependencies:
+      path-key: 3.1.1
+      shebang-command: 2.0.0
+      which: 2.0.2
+    optional: true
+
   csstype@3.2.3: {}
+
+  debug@4.4.3:
+    dependencies:
+      ms: 2.1.3
 
   detect-libc@2.1.2: {}
 
@@ -2003,6 +2276,14 @@ snapshots:
 
   eventemitter3@5.0.1: {}
 
+  eventsource-parser@3.1.1:
+    optional: true
+
+  eventsource@3.0.7:
+    dependencies:
+      eventsource-parser: 3.1.1
+    optional: true
+
   expect-type@1.4.0: {}
 
   fdir@6.5.0(picomatch@4.0.7):
@@ -2017,9 +2298,15 @@ snapshots:
 
   hono@4.13.4: {}
 
+  isexe@2.0.0:
+    optional: true
+
   isows@1.0.7(ws@8.21.0):
     dependencies:
       ws: 8.21.0
+
+  jose@6.2.10:
+    optional: true
 
   lightningcss-android-arm64@1.33.0:
     optional: true
@@ -2074,9 +2361,16 @@ snapshots:
     dependencies:
       "@jridgewell/sourcemap-codec": 1.5.5
 
+  ms@2.1.3: {}
+
   nanoid@3.3.18: {}
 
   obug@2.1.4: {}
+
+  openai@7.5.0(ws@8.21.0)(zod@4.4.3):
+    optionalDependencies:
+      ws: 8.21.0
+      zod: 4.4.3
 
   ox@0.14.34(typescript@7.0.2)(zod@4.4.3):
     dependencies:
@@ -2115,11 +2409,17 @@ snapshots:
       "@oxlint/binding-win32-ia32-msvc": 1.80.0
       "@oxlint/binding-win32-x64-msvc": 1.80.0
 
+  path-key@3.1.1:
+    optional: true
+
   pathe@2.0.3: {}
 
   picocolors@1.1.1: {}
 
   picomatch@4.0.7: {}
+
+  pkce-challenge@5.0.1:
+    optional: true
 
   playwright-core@1.61.0: {}
 
@@ -2168,6 +2468,14 @@ snapshots:
       "@rolldown/binding-win32-x64-msvc": 1.2.5
 
   scheduler@0.27.0: {}
+
+  shebang-command@2.0.0:
+    dependencies:
+      shebang-regex: 3.0.0
+    optional: true
+
+  shebang-regex@3.0.0:
+    optional: true
 
   siginfo@2.0.0: {}
 
@@ -2275,6 +2583,11 @@ snapshots:
       "@types/node": 24.13.3
     transitivePeerDependencies:
       - msw
+
+  which@2.0.2:
+    dependencies:
+      isexe: 2.0.0
+    optional: true
 
   why-is-node-running@2.3.0:
     dependencies:
