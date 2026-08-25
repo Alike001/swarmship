@@ -16,7 +16,6 @@ describe("environment validation", () => {
     expect(parseWorkerEnvironment({})).toEqual({
       DATABASE_URL: "postgres://postgres@127.0.0.1:5432/postgres",
       NODE_ENV: "development",
-      SWARMSHIP_AGENT_MODEL: "gpt-5-mini",
       WORKER_LEASE_SECONDS: 60,
       WORKER_POLL_INTERVAL_MS: 1_000,
       WORKER_RETRY_SECONDS: 300,

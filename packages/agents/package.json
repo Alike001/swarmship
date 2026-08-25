@@ -19,6 +19,7 @@
   "dependencies": {
     "@openai/agents": "0.17.0",
     "@swarmship/domain": "workspace:^",
+    "openai": "7.5.0",
     "zod": "4.4.3"
   },
   "devDependencies": {

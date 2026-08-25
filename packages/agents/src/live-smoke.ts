@@ -1,5 +1,6 @@
 import {
   createSwarmShipAgents,
+  createConfiguredAgentModel,
   extractAcceptedSpecification,
   runSelectedAgent,
   type AgentToolExecutors,
@@ -14,8 +15,13 @@ const executors: AgentToolExecutors = {
   requestGuardedDeployment: forbiddenExecutor,
   readIndependentEvidence: forbiddenExecutor,
 };
-const model = process.env.SWARMSHIP_AGENT_MODEL?.trim() || "gpt-5-mini";
-const agents = createSwarmShipAgents({ model, executors });
+const configuredModel = createConfiguredAgentModel(process.env, {
+  maxRetries: 0,
+});
+const agents = createSwarmShipAgents({
+  model: configuredModel.model,
+  executors,
+});
 const snapshot = {
   state: "created",
   version: 0,
@@ -40,7 +46,8 @@ console.log(
     contractFamily: specification.contractFamily,
     decision: result.output.decision,
     maxHandoffs: specification.maxHandoffs,
-    model,
+    model: configuredModel.modelName,
+    provider: configuredModel.provider,
     role: result.role,
     summary: result.output.summary,
     toolCalls: 0,

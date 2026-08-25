@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import {
+  createConfiguredAgentModel,
   createSwarmShipAgents,
   type AgentToolExecutors,
 } from "@swarmship/agents";
@@ -42,13 +43,14 @@ function wait(milliseconds: number, signal: AbortSignal): Promise<void> {
 
 const environment = parseWorkerEnvironment(process.env);
 const health = getWorkerHealth(environment);
+const configuredModel = createConfiguredAgentModel(process.env);
 const database = createDatabase(environment.DATABASE_URL, {
   applicationName: "swarmship-worker",
 });
 await runMigrations(database);
 const agents = createSwarmShipAgents({
   executors,
-  model: environment.SWARMSHIP_AGENT_MODEL,
+  model: configuredModel.model,
 });
 const leases = new LeaseRepository(database);
 const specifications = new SpecificationRepository(database);
@@ -57,7 +59,9 @@ const shutdown = new AbortController();
 process.once("SIGINT", () => shutdown.abort());
 process.once("SIGTERM", () => shutdown.abort());
 
-console.log(`SwarmShip worker ready with ${health.pollIntervalMs}ms polling`);
+console.log(
+  `SwarmShip worker ready with ${configuredModel.provider}/${configuredModel.modelName} and ${health.pollIntervalMs}ms polling`,
+);
 
 try {
   while (!shutdown.signal.aborted) {

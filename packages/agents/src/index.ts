@@ -15,6 +15,12 @@ export {
   type AgentRuntimeErrorCode,
 } from "./orchestrator.js";
 export {
+  AGENT_PROVIDERS,
+  createConfiguredAgentModel,
+  type AgentProvider,
+  type ConfiguredAgentModel,
+} from "./provider.js";
+export {
   buildAgentOutputSchema,
   buildToolResultSchema,
   deploymentAgentOutputSchema,

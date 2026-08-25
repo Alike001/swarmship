@@ -38,7 +38,11 @@ export function createSwarmShipAgents(options: {
   executors: AgentToolExecutors;
 }) {
   const tools = createAgentTools(options.executors);
-  const requiredTool = { toolChoice: "required" as const };
+  const boundedModel = {
+    retry: { maxRetries: 0 },
+    timeoutMs: 45_000,
+  } as const;
+  const requiredTool = { ...boundedModel, toolChoice: "required" as const };
 
   return {
     specification: new Agent<
@@ -48,6 +52,7 @@ export function createSwarmShipAgents(options: {
       name: "SwarmShip Specification Agent",
       instructions: AGENT_INSTRUCTIONS.specification,
       model: options.model,
+      modelSettings: boundedModel,
       outputType: specificationAgentOutputSchema,
       tools: [],
       handoffs: [],

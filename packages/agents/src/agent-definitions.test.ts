@@ -44,6 +44,15 @@ describe("SwarmShip agent definitions", () => {
     expect(agents.witness.modelSettings.toolChoice).toBe("required");
   });
 
+  it("bounds every provider call within the worker lease", () => {
+    const agents = createTestAgents(new ScriptedModel());
+
+    for (const agent of Object.values(agents)) {
+      expect(agent.modelSettings.timeoutMs).toBe(45_000);
+      expect(agent.modelSettings.retry?.maxRetries).toBe(0);
+    }
+  });
+
   it("states the security boundaries in role instructions", () => {
     expect(AGENT_INSTRUCTIONS.specification).toContain("no tools");
     expect(AGENT_INSTRUCTIONS.build).toContain("cannot run a compiler");

@@ -100,6 +100,9 @@ importers:
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../domain
+      openai:
+        specifier: 7.5.0
+        version: 7.5.0(ws@8.21.0)(zod@4.4.3)
       zod:
         specifier: 4.4.3
         version: 4.4.3

@@ -29,7 +29,6 @@ const workerEnvironmentSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
-  SWARMSHIP_AGENT_MODEL: z.string().min(1).max(120).default("gpt-5-mini"),
   WORKER_LEASE_SECONDS: durationSeconds.default(60),
   WORKER_POLL_INTERVAL_MS: pollInterval.default(1_000),
   WORKER_RETRY_SECONDS: durationSeconds.default(300),
