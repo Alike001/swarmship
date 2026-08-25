@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/hero-read-smoke.ts",
+    "src/test-clients.ts"
+  ]
+}

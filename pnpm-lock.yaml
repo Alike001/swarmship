@@ -77,6 +77,16 @@ importers:
         specifier: 4.23.12
         version: 4.23.12
 
+  packages/chain:
+    dependencies:
+      viem:
+        specifier: 2.55.19
+        version: 2.55.19(typescript@7.0.2)(zod@4.4.3)
+    devDependencies:
+      tsx:
+        specifier: 4.23.12
+        version: 4.23.12
+
   packages/domain:
     dependencies:
       viem:
