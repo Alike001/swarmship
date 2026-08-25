@@ -8,11 +8,14 @@ export {
 export { PersistenceError, type PersistenceErrorCode } from "./errors.js";
 export { LeaseRepository } from "./lease-repository.js";
 export { ReleaseRepository } from "./release-repository.js";
+export { SpecificationRepository } from "./specification-repository.js";
 export type {
   CreateReleaseInput,
   CreateReleaseResult,
+  DeferredReleaseError,
   IdempotencyInput,
   ReleaseLease,
   ReleaseRow,
   ReleaseTransitionRow,
+  SpecificationResultInput,
 } from "./types.js";

@@ -2,7 +2,9 @@ import type {
   ReconciliationKind,
   ReleaseActor,
   ReleaseEvent,
+  ReleaseTransitionCommand,
   ReleaseTransitionEffect,
+  TaskRegistrySpecV1,
 } from "@swarmship/domain/release";
 import type { ReleaseState } from "@swarmship/domain";
 
@@ -13,6 +15,9 @@ export type ReleaseRow = {
   state: ReleaseState;
   version: number;
   reconciliationKind: ReconciliationKind | null;
+  specification: TaskRegistrySpecV1 | null;
+  specificationSummary: string | null;
+  missingFields: string[] | null;
   buildEvidence: unknown | null;
   manifestApproval: unknown | null;
   safeError: unknown | null;
@@ -36,6 +41,9 @@ export type ReleaseTransitionRow = {
   toState: ReleaseState;
   evidenceRef: `0x${string}`;
   effects: ReleaseTransitionEffect[];
+  toolName: string | null;
+  safeSummary: string | null;
+  deterministicResult: unknown | null;
   createdAt: Date;
 };
 
@@ -59,4 +67,19 @@ export type CreateReleaseResult = {
 export type ReleaseLease = {
   release: ReleaseRow;
   token: string;
+};
+
+export type DeferredReleaseError = {
+  code: string;
+  message: string;
+};
+
+export type SpecificationResultInput = {
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  missingFields: string[];
+  releaseId: string;
+  specification: TaskRegistrySpecV1 | null;
+  summary: string;
+  workerId: string;
 };

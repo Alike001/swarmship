@@ -14,8 +14,12 @@ describe("environment validation", () => {
       PORT: 3_000,
     });
     expect(parseWorkerEnvironment({})).toEqual({
+      DATABASE_URL: "postgres://postgres@127.0.0.1:5432/postgres",
       NODE_ENV: "development",
+      SWARMSHIP_AGENT_MODEL: "gpt-5-mini",
+      WORKER_LEASE_SECONDS: 60,
       WORKER_POLL_INTERVAL_MS: 1_000,
+      WORKER_RETRY_SECONDS: 300,
     });
   });
 
@@ -33,6 +37,12 @@ describe("environment validation", () => {
   it.each(["0", "249", "60001"])("rejects unsafe poll interval %s", (value) => {
     expect(() =>
       parseWorkerEnvironment({ WORKER_POLL_INTERVAL_MS: value }),
+    ).toThrow();
+  });
+
+  it.each(["0", "3601"])("rejects unsafe worker duration %s", (value) => {
+    expect(() =>
+      parseWorkerEnvironment({ WORKER_LEASE_SECONDS: value }),
     ).toThrow();
   });
 });

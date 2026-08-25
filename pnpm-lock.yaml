@@ -75,9 +75,18 @@ importers:
 
   apps/worker:
     dependencies:
+      "@openai/agents":
+        specifier: 0.17.0
+        version: 0.17.0(ws@8.21.0)(zod@4.4.3)
+      "@swarmship/agents":
+        specifier: workspace:^
+        version: link:../../packages/agents
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../../packages/domain
+      "@swarmship/persistence":
+        specifier: workspace:^
+        version: link:../../packages/persistence
     devDependencies:
       tsx:
         specifier: 4.23.12

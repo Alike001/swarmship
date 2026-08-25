@@ -80,4 +80,43 @@ describe("LeaseRepository", () => {
     await expect(leases.claimNext("worker", 0)).rejects.toThrow(RangeError);
     await expect(leases.claimNext("worker", 3601)).rejects.toThrow(RangeError);
   });
+
+  it("claims only the states requested by the worker", async () => {
+    const waiting = await releases.create({ originalRequest: "Waiting" });
+    await testDatabase`
+      UPDATE releases SET state = 'needs_input' WHERE id = ${waiting.release.id}
+    `;
+    const ready = await releases.create({ originalRequest: "Ready" });
+
+    const claim = await leases.claimNext("specification-worker", 60, [
+      "created",
+    ]);
+
+    expect(claim?.release.id).toBe(ready.release.id);
+  });
+
+  it("defers a provider failure and clears the current lease", async () => {
+    const created = await releases.create({ originalRequest: "Registry" });
+    const claim = await leases.claimNext("worker-a", 60, ["created"]);
+    if (claim === null) throw new Error("Expected a lease.");
+
+    await leases.defer(
+      claim.release.id,
+      "worker-a",
+      claim.token,
+      { code: "model_quota_exhausted", message: "API quota is unavailable." },
+      300,
+    );
+
+    expect(await releases.get(created.release.id)).toMatchObject({
+      leaseOwner: null,
+      leaseToken: null,
+      retryCount: 1,
+      safeError: {
+        code: "model_quota_exhausted",
+        message: "API quota is unavailable.",
+      },
+    });
+    expect(await leases.claimNext("worker-b", 60, ["created"])).toBeNull();
+  });
 });

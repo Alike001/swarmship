@@ -6,7 +6,9 @@ export interface WorkerHealth {
   status: "ready";
 }
 
-export function getWorkerHealth(environment: WorkerEnvironment): WorkerHealth {
+export function getWorkerHealth(
+  environment: Pick<WorkerEnvironment, "WORKER_POLL_INTERVAL_MS">,
+): WorkerHealth {
   return {
     pollIntervalMs: environment.WORKER_POLL_INTERVAL_MS,
     service: "worker",

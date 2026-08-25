@@ -1,8 +1,18 @@
 import { randomUUID } from "node:crypto";
 
+import { RELEASE_STATES, type ReleaseState } from "@swarmship/domain";
+
 import type { Database } from "./database.js";
 import { PersistenceError } from "./errors.js";
-import type { ReleaseLease, ReleaseRow } from "./types.js";
+import type {
+  DeferredReleaseError,
+  ReleaseLease,
+  ReleaseRow,
+} from "./types.js";
+
+const claimableStates = RELEASE_STATES.filter(
+  (state) => state !== "verified" && state !== "failed",
+);
 
 function validateDuration(durationSeconds: number): void {
   if (
@@ -14,19 +24,42 @@ function validateDuration(durationSeconds: number): void {
   }
 }
 
+function validateStates(states: readonly ReleaseState[]): void {
+  if (
+    states.length === 0 ||
+    states.some((state) => !RELEASE_STATES.includes(state))
+  ) {
+    throw new RangeError("At least one valid release state is required.");
+  }
+}
+
+function validateDeferredError(error: DeferredReleaseError): void {
+  if (
+    error.code.length < 1 ||
+    error.code.length > 80 ||
+    !/^[a-z0-9_]+$/.test(error.code) ||
+    error.message.length < 1 ||
+    error.message.length > 300
+  ) {
+    throw new RangeError("Deferred errors must use bounded safe fields.");
+  }
+}
+
 export class LeaseRepository {
   constructor(private readonly database: Database) {}
 
   async claimNext(
     workerId: string,
     durationSeconds: number,
+    states: readonly ReleaseState[] = claimableStates,
   ): Promise<ReleaseLease | null> {
     validateDuration(durationSeconds);
+    validateStates(states);
     const token = randomUUID();
     const [release] = await this.database<ReleaseRow[]>`
       WITH candidate AS (
         SELECT id FROM releases
-        WHERE state NOT IN ('verified', 'failed')
+        WHERE state = ANY(${this.database.array([...states])})
           AND next_attempt_at <= clock_timestamp()
           AND (lease_expires_at IS NULL OR lease_expires_at <= clock_timestamp())
         ORDER BY next_attempt_at ASC, created_at ASC
@@ -43,6 +76,38 @@ export class LeaseRepository {
       RETURNING release.*
     `;
     return release === undefined ? null : { release, token };
+  }
+
+  async defer(
+    releaseId: string,
+    workerId: string,
+    token: string,
+    error: DeferredReleaseError,
+    delaySeconds: number,
+  ): Promise<void> {
+    validateDuration(delaySeconds);
+    validateDeferredError(error);
+    const deferred = await this.database`
+      UPDATE releases
+      SET safe_error = ${this.database.json(error)},
+          retry_count = retry_count + 1,
+          next_attempt_at = clock_timestamp() + make_interval(secs => ${delaySeconds}),
+          lease_owner = NULL,
+          lease_token = NULL,
+          lease_expires_at = NULL,
+          updated_at = clock_timestamp()
+      WHERE id = ${releaseId}
+        AND lease_owner = ${workerId}
+        AND lease_token = ${token}
+        AND lease_expires_at > clock_timestamp()
+      RETURNING id
+    `;
+    if (deferred.length === 0) {
+      throw new PersistenceError(
+        "lease_lost",
+        "This worker no longer owns the release lease.",
+      );
+    }
   }
 
   async renew(

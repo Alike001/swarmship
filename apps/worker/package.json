@@ -11,7 +11,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@swarmship/domain": "workspace:^"
+    "@openai/agents": "0.17.0",
+    "@swarmship/agents": "workspace:^",
+    "@swarmship/domain": "workspace:^",
+    "@swarmship/persistence": "workspace:^"
   },
   "devDependencies": {
     "tsx": "4.23.12"
