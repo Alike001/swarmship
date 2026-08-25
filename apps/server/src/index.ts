@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server";
 
-import { parseServerEnvironment } from "@swarmship/domain";
+import { parseServerEnvironment } from "@swarmship/domain/environment";
 
 import { app } from "./app.js";
 

@@ -8,14 +8,25 @@
       "development": "./src/index.ts",
       "types": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./environment": {
+      "development": "./src/environment.ts",
+      "types": "./src/environment.ts",
+      "default": "./dist/environment.js"
+    },
+    "./release": {
+      "development": "./src/release.ts",
+      "types": "./src/release.ts",
+      "default": "./dist/release.js"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "viem": "2.55.19",
     "zod": "4.4.3"
   }
 }

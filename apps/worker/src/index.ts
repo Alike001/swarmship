@@ -1,4 +1,4 @@
-import { parseWorkerEnvironment } from "@swarmship/domain";
+import { parseWorkerEnvironment } from "@swarmship/domain/environment";
 
 import { getWorkerHealth } from "./health.js";
 

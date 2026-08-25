@@ -1,4 +1,4 @@
-import type { WorkerEnvironment } from "@swarmship/domain";
+import type { WorkerEnvironment } from "@swarmship/domain/environment";
 
 export interface WorkerHealth {
   pollIntervalMs: number;
