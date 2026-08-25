@@ -14,6 +14,7 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
     "test:sepolia": "tsx src/hero-read-smoke.ts",
+    "test:sepolia:write": "node --env-file=../../apps/worker/.env --import tsx src/hero-write-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

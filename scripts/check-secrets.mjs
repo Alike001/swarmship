@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { basename, join, relative } from "node:path";
+import { promisify } from "node:util";
 
 const root = process.cwd();
 const publicRoots = [
@@ -31,6 +33,21 @@ const secretPatterns = [
   /\bPRIVATE_KEY\s*[:=]\s*["']?0x[a-fA-F0-9]{64}\b/,
 ];
 const findings = [];
+const execFileAsync = promisify(execFile);
+
+async function isGitIgnored(path) {
+  try {
+    await execFileAsync(
+      "git",
+      ["check-ignore", "--quiet", "--", relative(root, path)],
+      { cwd: root },
+    );
+    return true;
+  } catch (error) {
+    if (error && typeof error === "object" && error.code === 1) return false;
+    throw error;
+  }
+}
 
 async function collectFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -60,10 +77,13 @@ for (const path of candidates) {
   const filename = basename(path);
   const isEnvironmentFile = filename === ".env" || filename.startsWith(".env.");
 
-  if (
-    (isEnvironmentFile && filename !== ".env.example") ||
-    forbiddenPaths.some((pattern) => pattern.test(path))
-  ) {
+  if (isEnvironmentFile && filename !== ".env.example") {
+    if (await isGitIgnored(path)) continue;
+    findings.push(`${path}: forbidden secret-bearing path`);
+    continue;
+  }
+
+  if (forbiddenPaths.some((pattern) => pattern.test(path))) {
     findings.push(`${path}: forbidden secret-bearing path`);
     continue;
   }
