@@ -19,6 +19,8 @@
     "contract:stylus": "cargo stylus check --contract agent-task-registry --endpoint https://sepolia-rollup.arbitrum.io/rpc",
     "contract:test": "cargo test --workspace --all-features",
     "dev": "pnpm --parallel --filter @swarmship/web --filter @swarmship/server --filter @swarmship/worker dev",
+    "db:test:down": "docker compose -f infra/compose.test.yml down",
+    "db:test:up": "docker compose -f infra/compose.test.yml up -d --wait",
     "format": "prettier --write \"apps/**/*.{ts,tsx,css,html,json}\" \"packages/**/*.{ts,tsx,json}\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"playwright.config.ts\" \"*.{json,yaml,yml}\" && pnpm contract:format",
     "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,html,json}\" \"packages/**/*.{ts,tsx,json}\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.yml\" \"playwright.config.ts\" \"*.{json,yaml,yml}\" && pnpm contract:format:check",
     "lint": "oxlint --deny-warnings apps packages tests scripts playwright.config.ts && pnpm contract:lint",
