@@ -1,6 +1,7 @@
 import { hashTypedData, type Hex } from "viem";
 import { z } from "zod";
 
+import { nonZeroBytes32Schema } from "./evm-primitives.js";
 import { PRODUCT } from "./product.js";
 import { taskRegistrySpecSchema } from "./release-specification.js";
 import {
@@ -11,16 +12,7 @@ import {
   type ValidationResult,
 } from "./validation.js";
 
-const ZERO_BYTES_32 = `0x${"0".repeat(64)}`;
 const UINT_256_MAX = (1n << 256n) - 1n;
-
-const bytes32 = z
-  .string({ error: "A 32-byte hash is required." })
-  .regex(/^0x[0-9a-fA-F]{64}$/, "Use a 0x-prefixed 32-byte hexadecimal hash.")
-  .refine((value) => value.toLowerCase() !== ZERO_BYTES_32, {
-    message: "A zero hash is not valid evidence.",
-  })
-  .transform((value) => value.toLowerCase() as Hex);
 
 const nonce = z
   .string({ error: "The release nonce must be a decimal string." })
@@ -34,12 +26,12 @@ export const releaseManifestSchema = z
     version: z.literal(1, {
       error: "Only release manifest version 1 is supported.",
     }),
-    releaseId: bytes32,
+    releaseId: nonZeroBytes32Schema,
     specification: taskRegistrySpecSchema,
-    sourceHash: bytes32,
-    artifactHash: bytes32,
-    testEvidenceHash: bytes32,
-    toolchainHash: bytes32,
+    sourceHash: nonZeroBytes32Schema,
+    artifactHash: nonZeroBytes32Schema,
+    testEvidenceHash: nonZeroBytes32Schema,
+    toolchainHash: nonZeroBytes32Schema,
     chainId: z.literal(PRODUCT.networkChainId, {
       error: "SwarmShip v1 only releases to Arbitrum Sepolia.",
     }),
