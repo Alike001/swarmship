@@ -71,7 +71,17 @@ function presentTransition(transition: ReleaseTransitionRow) {
 
 function presentRelease(release: ReleaseRow) {
   const safeError = safeErrorSchema.safeParse(release.safeError);
+  const build =
+    release.buildEvidence === null
+      ? null
+      : {
+          evidenceRef: release.buildEvidence.evidenceRef,
+          sourceHash: release.buildEvidence.sourceHash,
+          templateVersion: release.buildEvidence.templateVersion,
+          testInputHash: release.buildEvidence.testInputHash,
+        };
   return {
+    build,
     createdAt: release.createdAt.toISOString(),
     links: {
       approval: `/releases/${release.id}/approve`,

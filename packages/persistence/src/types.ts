@@ -6,6 +6,7 @@ import type {
   ReleaseTransitionEffect,
   TaskRegistrySpecV1,
 } from "@swarmship/domain/release";
+import type { BuildEvidenceV1 } from "@swarmship/builder";
 import type { ReleaseState } from "@swarmship/domain";
 
 export type ReleaseRow = {
@@ -18,7 +19,7 @@ export type ReleaseRow = {
   specification: TaskRegistrySpecV1 | null;
   specificationSummary: string | null;
   missingFields: string[] | null;
-  buildEvidence: unknown | null;
+  buildEvidence: BuildEvidenceV1 | null;
   manifestApproval: unknown | null;
   safeError: unknown | null;
   leaseOwner: string | null;
@@ -80,6 +81,16 @@ export type SpecificationResultInput = {
   missingFields: string[];
   releaseId: string;
   specification: TaskRegistrySpecV1 | null;
+  summary: string;
+  workerId: string;
+};
+
+export type BuildResultInput = {
+  command: ReleaseTransitionCommand;
+  evidence: BuildEvidenceV1;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
   summary: string;
   workerId: string;
 };

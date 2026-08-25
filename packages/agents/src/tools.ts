@@ -94,13 +94,14 @@ export function createAgentTools(executors: AgentToolExecutors) {
     description:
       "Render the fixed Rust Stylus task registry and test inputs for this release.",
     parameters: noParametersSchema,
-    outputSchema: buildToolResultSchema,
     execute: async (
       _input,
       runContext: RunContext<SwarmShipAgentContext> | undefined,
     ) => {
       const context = requiredContext(runContext);
-      const result = await executors.renderTaskRegistry(context);
+      const result = buildToolResultSchema.parse(
+        await executors.renderTaskRegistry(context),
+      );
       recordResult(context, {
         role: "build",
         toolName: AGENT_TOOL_NAMES.build,
@@ -115,13 +116,14 @@ export function createAgentTools(executors: AgentToolExecutors) {
     description:
       "Run the fixed compiler, Stylus compatibility checks, and deterministic release tests.",
     parameters: noParametersSchema,
-    outputSchema: verificationToolResultSchema,
     execute: async (
       _input,
       runContext: RunContext<SwarmShipAgentContext> | undefined,
     ) => {
       const context = requiredContext(runContext);
-      const result = await executors.runReleaseVerification(context);
+      const result = verificationToolResultSchema.parse(
+        await executors.runReleaseVerification(context),
+      );
       recordResult(context, {
         role: "verification",
         toolName: AGENT_TOOL_NAMES.verification,
@@ -136,13 +138,14 @@ export function createAgentTools(executors: AgentToolExecutors) {
     description:
       "Request the state-gated HERŌ anchor, deployment, or reconciliation operation for this release.",
     parameters: noParametersSchema,
-    outputSchema: deploymentToolResultSchema,
     execute: async (
       _input,
       runContext: RunContext<SwarmShipAgentContext> | undefined,
     ) => {
       const context = requiredContext(runContext);
-      const result = await executors.requestGuardedDeployment(context);
+      const result = deploymentToolResultSchema.parse(
+        await executors.requestGuardedDeployment(context),
+      );
       recordResult(context, {
         role: "deployment",
         toolName: AGENT_TOOL_NAMES.deployment,
@@ -157,13 +160,14 @@ export function createAgentTools(executors: AgentToolExecutors) {
     description:
       "Read deployment evidence through the independent witness RPC and request receipt anchoring only when it matches.",
     parameters: noParametersSchema,
-    outputSchema: witnessToolResultSchema,
     execute: async (
       _input,
       runContext: RunContext<SwarmShipAgentContext> | undefined,
     ) => {
       const context = requiredContext(runContext);
-      const result = await executors.readIndependentEvidence(context);
+      const result = witnessToolResultSchema.parse(
+        await executors.readIndependentEvidence(context),
+      );
       recordResult(context, {
         role: "witness",
         toolName: AGENT_TOOL_NAMES.witness,

@@ -61,6 +61,33 @@ async function runTypedAgent<TOutput extends AgentOutputType>(
   return result.finalOutput;
 }
 
+function parseTextSummary(role: AgentRole, raw: unknown): string {
+  try {
+    if (typeof raw === "string") {
+      const trimmed = raw.trim();
+      const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/.exec(trimmed)?.[1];
+      const candidate = fenced ?? trimmed;
+      if (candidate.startsWith("{")) {
+        const parsed = z
+          .strictObject({ summary: z.string() })
+          .passthrough()
+          .parse(JSON.parse(candidate));
+        return z.string().min(1).max(600).parse(parsed.summary.trim());
+      }
+      return z.string().min(1).max(600).parse(trimmed);
+    }
+    return z
+      .strictObject({ summary: z.string().min(1).max(600) })
+      .passthrough()
+      .parse(raw).summary;
+  } catch {
+    throw new AgentRuntimeError(
+      "invalid_model_output",
+      `The ${role} agent returned malformed or unsafe output.`,
+    );
+  }
+}
+
 function requiredToolRecord(
   role: Exclude<AgentRole, "specification">,
   journal: AgentToolRecord[],
@@ -122,10 +149,14 @@ export async function runSelectedAgent(input: {
         input.prompt,
         context,
       );
+      const record = requiredToolRecord(role, context.toolJournal);
       return {
         role,
-        output: buildAgentOutputSchema.parse(raw),
-        toolRecord: requiredToolRecord(role, context.toolJournal),
+        output: buildAgentOutputSchema.parse({
+          summary: parseTextSummary(role, raw),
+          toolStatus: record.result.status,
+        }),
+        toolRecord: record,
       };
     }
     if (role === "verification") {
@@ -135,10 +166,14 @@ export async function runSelectedAgent(input: {
         input.prompt,
         context,
       );
+      const record = requiredToolRecord(role, context.toolJournal);
       return {
         role,
-        output: verificationAgentOutputSchema.parse(raw),
-        toolRecord: requiredToolRecord(role, context.toolJournal),
+        output: verificationAgentOutputSchema.parse({
+          summary: parseTextSummary(role, raw),
+          toolStatus: record.result.status,
+        }),
+        toolRecord: record,
       };
     }
     if (role === "deployment") {
@@ -148,10 +183,14 @@ export async function runSelectedAgent(input: {
         input.prompt,
         context,
       );
+      const record = requiredToolRecord(role, context.toolJournal);
       return {
         role,
-        output: deploymentAgentOutputSchema.parse(raw),
-        toolRecord: requiredToolRecord(role, context.toolJournal),
+        output: deploymentAgentOutputSchema.parse({
+          summary: parseTextSummary(role, raw),
+          toolStatus: record.result.status,
+        }),
+        toolRecord: record,
       };
     }
     const raw = await runTypedAgent(
@@ -160,10 +199,14 @@ export async function runSelectedAgent(input: {
       input.prompt,
       context,
     );
+    const record = requiredToolRecord(role, context.toolJournal);
     return {
       role,
-      output: witnessAgentOutputSchema.parse(raw),
-      toolRecord: requiredToolRecord(role, context.toolJournal),
+      output: witnessAgentOutputSchema.parse({
+        summary: parseTextSummary(role, raw),
+        toolStatus: record.result.status,
+      }),
+      toolRecord: record,
     };
   } catch (error) {
     if (error instanceof AgentRuntimeError) throw error;

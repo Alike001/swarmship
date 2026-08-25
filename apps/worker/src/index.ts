@@ -7,6 +7,7 @@ import {
 } from "@swarmship/agents";
 import { parseWorkerEnvironment } from "@swarmship/domain/environment";
 import {
+  BuildRepository,
   closeDatabase,
   createDatabase,
   LeaseRepository,
@@ -14,6 +15,7 @@ import {
   SpecificationRepository,
 } from "@swarmship/persistence";
 
+import { processOneBuild } from "./build-processor.js";
 import { getWorkerHealth } from "./health.js";
 import { processOneSpecification } from "./specification-processor.js";
 
@@ -52,9 +54,10 @@ const agents = createSwarmShipAgents({
   executors,
   model: configuredModel.model,
 });
+const builds = new BuildRepository(database);
 const leases = new LeaseRepository(database);
 const specifications = new SpecificationRepository(database);
-const workerId = `specification-${randomUUID()}`;
+const workerId = `worker-${randomUUID()}`;
 const shutdown = new AbortController();
 process.once("SIGINT", () => shutdown.abort());
 process.once("SIGTERM", () => shutdown.abort());
@@ -74,8 +77,21 @@ try {
         specifications,
         workerId,
       });
+      const buildResult =
+        result.status === "idle"
+          ? await processOneBuild({
+              builds,
+              leaseSeconds: environment.WORKER_LEASE_SECONDS,
+              leases,
+              model: configuredModel.model,
+              retrySeconds: environment.WORKER_RETRY_SECONDS,
+              workerId,
+            })
+          : { status: "idle" as const };
       if (result.status !== "idle") {
         console.log("SwarmShip worker step", result);
+      } else if (buildResult.status !== "idle") {
+        console.log("SwarmShip worker step", buildResult);
       }
     } catch (error) {
       console.error("SwarmShip worker loop error", {

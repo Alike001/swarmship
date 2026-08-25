@@ -102,6 +102,42 @@ describe("persisted release API", () => {
     expect(bodies[0]?.release.releaseId).toBe(bodies[1]?.release.releaseId);
   });
 
+  it("exposes build hashes without returning the stored source bundle", async () => {
+    const created = await postRelease(
+      "release-build-evidence",
+      "Create a bounded registry for two approved agents.",
+    );
+    const body = (await created.json()) as {
+      release: { releaseId: string };
+    };
+    const evidence = {
+      evidenceRef: `0x${"1".repeat(64)}`,
+      sourceFiles: [{ path: "Cargo.toml", content: "private source" }],
+      sourceHash: `0x${"2".repeat(64)}`,
+      templateVersion: "agent-task-registry-v1@1",
+      testInputHash: `0x${"3".repeat(64)}`,
+    };
+    await testDatabase`
+      UPDATE releases
+      SET build_evidence = ${testDatabase.json(evidence)}
+      WHERE id = ${body.release.releaseId}
+    `;
+
+    const read = await app.request(`/api/releases/${body.release.releaseId}`);
+    const result = (await read.json()) as { release: unknown };
+
+    expect(result.release).toMatchObject({
+      build: {
+        evidenceRef: evidence.evidenceRef,
+        sourceHash: evidence.sourceHash,
+        templateVersion: evidence.templateVersion,
+        testInputHash: evidence.testInputHash,
+      },
+    });
+    expect(JSON.stringify(result)).not.toContain("private source");
+    expect(JSON.stringify(result)).not.toContain("sourceFiles");
+  });
+
   it("rejects idempotency-key reuse for changed input", async () => {
     await postRelease(
       "conflicting-create",

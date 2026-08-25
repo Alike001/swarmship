@@ -8,11 +8,13 @@
     "dev": "tsx --conditions=development watch src/index.ts",
     "start": "node dist/index.js",
     "test": "vitest run",
+    "test:live:build": "node --conditions=development --env-file=.env --import tsx src/live-build-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@openai/agents": "0.17.0",
     "@swarmship/agents": "workspace:^",
+    "@swarmship/builder": "workspace:^",
     "@swarmship/domain": "workspace:^",
     "@swarmship/persistence": "workspace:^"
   },
