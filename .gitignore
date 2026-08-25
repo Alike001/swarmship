@@ -1,0 +1,25 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# JavaScript and frontend output
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# Rust and generated contract output
+target/
+artifacts/
+cache/
+
+# Local tooling and operating-system files
+.DS_Store
+*.swp
+*.swo
+
