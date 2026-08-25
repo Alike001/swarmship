@@ -1,0 +1,21 @@
+{
+  "name": "@swarmship/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx --conditions=development watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "@swarmship/domain": "workspace:^",
+    "hono": "4.13.4"
+  },
+  "devDependencies": {
+    "tsx": "4.23.12"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@swarmship/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx --conditions=development watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@swarmship/domain": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "4.23.12"
+  }
+}
