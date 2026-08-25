@@ -3,6 +3,7 @@ export {
   createDatabase,
   runMigrations,
   type Database,
+  type DatabaseOptions,
 } from "./database.js";
 export { PersistenceError, type PersistenceErrorCode } from "./errors.js";
 export { LeaseRepository } from "./lease-repository.js";

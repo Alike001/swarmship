@@ -34,9 +34,15 @@ importers:
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../../packages/domain
+      "@swarmship/persistence":
+        specifier: workspace:^
+        version: link:../../packages/persistence
       hono:
         specifier: 4.13.4
         version: 4.13.4
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       tsx:
         specifier: 4.23.12

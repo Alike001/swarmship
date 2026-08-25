@@ -6,17 +6,29 @@ import postgres, { type Sql } from "postgres";
 export type Database = Sql;
 export type TransactionDatabase = postgres.TransactionSql;
 
-export function createDatabase(databaseUrl: string): Database {
+export type DatabaseOptions = {
+  applicationName?: string;
+  searchPath?: string;
+};
+
+export function createDatabase(
+  databaseUrl: string,
+  options: DatabaseOptions = {},
+): Database {
+  const connection = {
+    application_name: options.applicationName ?? "swarmship",
+    statement_timeout: 30_000,
+    ...(options.searchPath === undefined
+      ? {}
+      : { search_path: options.searchPath }),
+  };
   return postgres(databaseUrl, {
     connect_timeout: 10,
     idle_timeout: 20,
     max: 10,
     max_lifetime: 60 * 30,
     transform: postgres.camel,
-    connection: {
-      application_name: "swarmship",
-      statement_timeout: 30_000,
-    },
+    connection,
   });
 }
 

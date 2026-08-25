@@ -1,10 +1,20 @@
 import { serve } from "@hono/node-server";
 
 import { parseServerEnvironment } from "@swarmship/domain/environment";
+import {
+  createDatabase,
+  ReleaseRepository,
+  runMigrations,
+} from "@swarmship/persistence";
 
-import { app } from "./app.js";
+import { createApp } from "./app.js";
 
 const environment = parseServerEnvironment(process.env);
+const database = createDatabase(environment.DATABASE_URL, {
+  applicationName: "swarmship-server",
+});
+await runMigrations(database);
+const app = createApp({ releases: new ReleaseRepository(database) });
 
 serve(
   {
