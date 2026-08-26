@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = 4_318;
+const deployedBaseUrl = process.env.PLAYWRIGHT_TEST_BASE_URL;
 
 export default defineConfig({
   expect: {
@@ -26,15 +27,19 @@ export default defineConfig({
   testDir: "./tests/e2e",
   timeout: 30_000,
   use: {
-    baseURL: `http://127.0.0.1:${port}`,
+    baseURL: deployedBaseUrl ?? `http://127.0.0.1:${port}`,
     screenshot: "only-on-failure",
     trace: "on-first-retry",
   },
-  webServer: {
-    command: `pnpm --filter @swarmship/web preview --host 127.0.0.1 --port ${port}`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    url: `http://127.0.0.1:${port}`,
-  },
+  ...(deployedBaseUrl
+    ? {}
+    : {
+        webServer: {
+          command: `pnpm --filter @swarmship/web preview --host 127.0.0.1 --port ${port}`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+          url: `http://127.0.0.1:${port}`,
+        },
+      }),
   workers: 1,
 });
