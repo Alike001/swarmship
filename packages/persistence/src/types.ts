@@ -11,6 +11,7 @@ import type {
 import type { BuildEvidenceV1 } from "@swarmship/builder";
 import type { ReleaseState } from "@swarmship/domain";
 import type { VerificationEvidenceV1 } from "@swarmship/verifier";
+import type { ManifestAnchorAttempt } from "./manifest-anchor-model.js";
 
 export type ReleaseRow = {
   id: string;
@@ -25,6 +26,7 @@ export type ReleaseRow = {
   buildEvidence: BuildEvidenceV1 | null;
   verificationEvidence: VerificationEvidenceV1 | null;
   manifestApproval: ManifestApprovalV1 | null;
+  manifestAnchorAttempt: ManifestAnchorAttempt | null;
   safeError: unknown | null;
   leaseOwner: string | null;
   leaseToken: string | null;
@@ -129,4 +131,23 @@ export type ApproveReleaseResult = {
   created: boolean;
   release: ReleaseRow;
   transition: ReleaseTransitionRow | null;
+};
+
+export type ManifestAnchorPreparedInput = {
+  attempt: ManifestAnchorAttempt;
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type ManifestAnchorOutcomeInput = {
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
 };

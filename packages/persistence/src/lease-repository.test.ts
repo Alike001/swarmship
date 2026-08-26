@@ -95,6 +95,30 @@ describe("LeaseRepository", () => {
     expect(claim?.release.id).toBe(ready.release.id);
   });
 
+  it("claims only the reconciliation kind requested by the worker", async () => {
+    const deployment = await releases.create({ originalRequest: "Deployment" });
+    const manifest = await releases.create({ originalRequest: "Manifest" });
+    await testDatabase`
+      UPDATE releases
+      SET state = 'reconciliation_required', reconciliation_kind = 'deployment'
+      WHERE id = ${deployment.release.id}
+    `;
+    await testDatabase`
+      UPDATE releases
+      SET state = 'reconciliation_required', reconciliation_kind = 'manifest_anchor'
+      WHERE id = ${manifest.release.id}
+    `;
+
+    const claim = await leases.claimNext(
+      "manifest-worker",
+      60,
+      ["reconciliation_required"],
+      ["manifest_anchor"],
+    );
+
+    expect(claim?.release.id).toBe(manifest.release.id);
+  });
+
   it("defers a provider failure and clears the current lease", async () => {
     const created = await releases.create({ originalRequest: "Registry" });
     const claim = await leases.claimNext("worker-a", 60, ["created"]);

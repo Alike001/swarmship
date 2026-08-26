@@ -5,12 +5,25 @@ import {
   createSwarmShipAgents,
   type AgentToolExecutors,
 } from "@swarmship/agents";
-import { parseWorkerEnvironment } from "@swarmship/domain/environment";
+import {
+  broadcastHeroAnchor,
+  confirmHeroAnchor,
+  createHeroPublicClient,
+  createHeroWalletClient,
+  prepareHeroAnchor,
+  reconcileHeroAnchor,
+  verifyHeroProof,
+} from "@swarmship/chain";
+import {
+  parseWorkerChainEnvironment,
+  parseWorkerEnvironment,
+} from "@swarmship/domain/environment";
 import {
   BuildRepository,
   closeDatabase,
   createDatabase,
   LeaseRepository,
+  ManifestAnchorRepository,
   runMigrations,
   SpecificationRepository,
   VerificationRepository,
@@ -18,6 +31,7 @@ import {
 
 import { processOneBuild } from "./build-processor.js";
 import { getWorkerHealth } from "./health.js";
+import { processOneManifestAnchor } from "./manifest-anchor-processor.js";
 import { processOneSpecification } from "./specification-processor.js";
 import { processOneVerification } from "./verification-processor.js";
 
@@ -46,8 +60,16 @@ function wait(milliseconds: number, signal: AbortSignal): Promise<void> {
 }
 
 const environment = parseWorkerEnvironment(process.env);
+const chainEnvironment = parseWorkerChainEnvironment(process.env);
 const health = getWorkerHealth(environment);
 const configuredModel = createConfiguredAgentModel(process.env);
+const heroPublicClient = createHeroPublicClient(
+  chainEnvironment.ARBITRUM_SEPOLIA_RPC_URL,
+);
+const heroWalletClient = createHeroWalletClient(
+  chainEnvironment.ARBITRUM_SEPOLIA_RPC_URL,
+  chainEnvironment.RELAYER_PRIVATE_KEY,
+);
 const database = createDatabase(environment.DATABASE_URL, {
   applicationName: "swarmship-worker",
 });
@@ -58,6 +80,7 @@ const agents = createSwarmShipAgents({
 });
 const builds = new BuildRepository(database);
 const leases = new LeaseRepository(database);
+const manifestAnchors = new ManifestAnchorRepository(database);
 const specifications = new SpecificationRepository(database);
 const verifications = new VerificationRepository(database);
 const workerId = `worker-${randomUUID()}`;
@@ -102,12 +125,45 @@ try {
               workerId,
             })
           : { status: "idle" as const };
+      const manifestAnchorResult =
+        result.status === "idle" &&
+        buildResult.status === "idle" &&
+        verificationResult.status === "idle"
+          ? await processOneManifestAnchor({
+              anchors: manifestAnchors,
+              broadcast: (prepared) =>
+                broadcastHeroAnchor(
+                  heroPublicClient,
+                  heroWalletClient,
+                  prepared,
+                ),
+              confirm: (proofRoot, transactionHash) =>
+                confirmHeroAnchor(heroPublicClient, proofRoot, transactionHash),
+              leaseSeconds: environment.WORKER_LEASE_SECONDS,
+              leases,
+              model: configuredModel.model,
+              prepare: (proofRoot) =>
+                prepareHeroAnchor(
+                  heroPublicClient,
+                  heroWalletClient,
+                  proofRoot,
+                ),
+              reconcile: (input) =>
+                reconcileHeroAnchor(heroPublicClient, input),
+              retrySeconds: environment.WORKER_RETRY_SECONDS,
+              verify: (proofRoot) =>
+                verifyHeroProof(heroPublicClient, proofRoot),
+              workerId,
+            })
+          : { status: "idle" as const };
       if (result.status !== "idle") {
         console.log("SwarmShip worker step", result);
       } else if (buildResult.status !== "idle") {
         console.log("SwarmShip worker step", buildResult);
       } else if (verificationResult.status !== "idle") {
         console.log("SwarmShip worker step", verificationResult);
+      } else if (manifestAnchorResult.status !== "idle") {
+        console.log("SwarmShip worker step", manifestAnchorResult);
       }
     } catch (error) {
       console.error("SwarmShip worker loop error", {

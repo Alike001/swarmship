@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:live:build": "node --conditions=development --env-file=.env --import tsx src/live-build-smoke.ts",
+    "test:live:manifest-anchor": "node --conditions=development --env-file=.env --import tsx src/live-manifest-anchor-smoke.ts",
     "test:live:verification": "node --conditions=development --env-file=.env --import tsx src/live-verification-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -16,6 +17,7 @@
     "@openai/agents": "0.17.0",
     "@swarmship/agents": "workspace:^",
     "@swarmship/builder": "workspace:^",
+    "@swarmship/chain": "workspace:^",
     "@swarmship/domain": "workspace:^",
     "@swarmship/persistence": "workspace:^",
     "@swarmship/verifier": "workspace:^"

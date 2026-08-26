@@ -31,10 +31,16 @@ export function selectRunnableAgent(snapshotInput: unknown): AgentRole {
   if (snapshot.state === "building") return "verification";
   if (
     snapshot.state === "approved" ||
-    snapshot.state === "approved_not_deployed"
+    snapshot.state === "approved_not_deployed" ||
+    snapshot.state === "anchoring_manifest" ||
+    snapshot.state === "deploying"
   )
     return "deployment";
-  if (snapshot.state === "deployed_unverified") return "witness";
+  if (
+    snapshot.state === "deployed_unverified" ||
+    snapshot.state === "anchoring_receipt"
+  )
+    return "witness";
   if (snapshot.state === "reconciliation_required") {
     if (snapshot.reconciliation === "receipt_anchor") return "witness";
     if (
@@ -51,16 +57,6 @@ export function selectRunnableAgent(snapshotInput: unknown): AgentRole {
     throw new AgentRuntimeError(
       "wait_for_user",
       "The exact release manifest is waiting for the user's signature.",
-    );
-  }
-  if (
-    snapshot.state === "anchoring_manifest" ||
-    snapshot.state === "deploying" ||
-    snapshot.state === "anchoring_receipt"
-  ) {
-    throw new AgentRuntimeError(
-      "operation_in_flight",
-      "A chain operation is already in progress and must be reconciled first.",
     );
   }
   throw new AgentRuntimeError(

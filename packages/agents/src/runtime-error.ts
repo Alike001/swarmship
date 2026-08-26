@@ -1,7 +1,6 @@
 export type AgentRuntimeErrorCode =
   | "invalid_snapshot"
   | "wait_for_user"
-  | "operation_in_flight"
   | "terminal_state"
   | "invalid_model_output"
   | "model_authentication_failed"

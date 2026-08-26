@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   parseServerEnvironment,
+  parseWorkerChainEnvironment,
   parseWorkerEnvironment,
 } from "./environment.js";
 
@@ -42,6 +43,25 @@ describe("environment validation", () => {
   it.each(["0", "3601"])("rejects unsafe worker duration %s", (value) => {
     expect(() =>
       parseWorkerEnvironment({ WORKER_LEASE_SECONDS: value }),
+    ).toThrow();
+  });
+
+  it("requires bounded private worker chain credentials", () => {
+    const key = `0x${"1".repeat(64)}`;
+    expect(
+      parseWorkerChainEnvironment({
+        ARBITRUM_SEPOLIA_RPC_URL: "https://sepolia-rollup.arbitrum.io/rpc",
+        RELAYER_PRIVATE_KEY: key,
+      }),
+    ).toEqual({
+      ARBITRUM_SEPOLIA_RPC_URL: "https://sepolia-rollup.arbitrum.io/rpc",
+      RELAYER_PRIVATE_KEY: key,
+    });
+    expect(() =>
+      parseWorkerChainEnvironment({
+        ARBITRUM_SEPOLIA_RPC_URL: "file:///tmp/rpc",
+        RELAYER_PRIVATE_KEY: "0x1234",
+      }),
     ).toThrow();
   });
 });

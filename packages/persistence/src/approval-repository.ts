@@ -1,15 +1,13 @@
 import {
   applyReleaseTransition,
-  createReleaseManifest,
   hashReleaseManifest,
-  manifestApprovalSchema,
   summarizeReleaseManifest,
   verifyManifestApproval,
-  type ManifestApprovalV1,
 } from "@swarmship/domain/release";
 
 import type { Database } from "./database.js";
 import { PersistenceError } from "./errors.js";
+import { pendingManifest, storedApproval } from "./release-guard.js";
 import type {
   ApproveReleaseInput,
   ApproveReleaseResult,
@@ -17,53 +15,6 @@ import type {
   ReleaseRow,
   ReleaseTransitionRow,
 } from "./types.js";
-
-const APPROVAL_WINDOW_SECONDS = 24 * 60 * 60;
-
-function currentManifest(current: ReleaseRow) {
-  const verification = current.verificationEvidence;
-  if (
-    current.state !== "awaiting_approval" ||
-    current.specification === null ||
-    current.buildEvidence === null ||
-    verification === null ||
-    verification.status !== "passed" ||
-    verification.artifactHash === null
-  ) {
-    throw new PersistenceError(
-      "transition_rejected",
-      "This release is not ready for owner approval.",
-    );
-  }
-  const verifiedAt = Math.floor(current.updatedAt.getTime() / 1_000);
-  const approvalExpiry = Math.min(
-    current.specification.expiry,
-    verifiedAt + APPROVAL_WINDOW_SECONDS,
-  );
-
-  return createReleaseManifest({
-    approvalExpiry,
-    artifactHash: verification.artifactHash,
-    publicId: current.publicId,
-    releaseVersion: current.version,
-    sourceHash: current.buildEvidence.sourceHash,
-    specification: current.specification,
-    testEvidenceHash: verification.testEvidenceHash,
-    toolchainHash: verification.toolchainHash,
-  });
-}
-
-function storedApproval(current: ReleaseRow): ManifestApprovalV1 | null {
-  if (current.manifestApproval === null) return null;
-  const parsed = manifestApprovalSchema.safeParse(current.manifestApproval);
-  if (!parsed.success) {
-    throw new PersistenceError(
-      "transition_rejected",
-      "The stored release approval is inconsistent and needs repair.",
-    );
-  }
-  return parsed.data;
-}
 
 export class ApprovalRepository {
   constructor(private readonly database: Database) {}
@@ -79,7 +30,7 @@ export class ApprovalRepository {
       throw new PersistenceError("release_not_found", "Release not found.");
     }
     const saved = storedApproval(current);
-    const manifest = saved?.manifest ?? currentManifest(current);
+    const manifest = saved?.manifest ?? pendingManifest(current);
     if (saved === null && manifest.approvalExpiry <= nowUnixSeconds) {
       throw new PersistenceError(
         "transition_rejected",
@@ -125,7 +76,7 @@ export class ApprovalRepository {
           "This release changed before approval. Reload its latest state.",
         );
       }
-      const manifest = currentManifest(current);
+      const manifest = pendingManifest(current);
       const verified = await verifyManifestApproval(
         manifest,
         input.signature,

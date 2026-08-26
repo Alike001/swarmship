@@ -127,6 +127,11 @@ describe("deterministic task registry verification", () => {
       ],
     ]);
     expect(
+      (firstExecutor as ReturnType<typeof vi.fn>).mock.calls
+        .slice(3)
+        .map(([request]) => request.timeoutMs),
+    ).toEqual([60_000, 360_000, 300_000, 180_000]);
+    expect(
       validateVerificationEvidence(first, build, specification, NOW),
     ).toEqual(first);
   });

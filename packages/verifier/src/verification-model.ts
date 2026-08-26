@@ -65,7 +65,7 @@ export const verificationCheckPlan = [
     args: ["test", "--locked", "--workspace", "--all-features"],
     command: "cargo",
     name: "rust_tests",
-    timeoutMs: 180_000,
+    timeoutMs: 360_000,
   },
   {
     args: [
@@ -78,7 +78,7 @@ export const verificationCheckPlan = [
     ],
     command: "cargo",
     name: "wasm_build",
-    timeoutMs: 180_000,
+    timeoutMs: 300_000,
   },
   {
     args: [

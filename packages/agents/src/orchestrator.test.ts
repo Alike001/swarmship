@@ -36,8 +36,11 @@ describe("agent routing", () => {
     ["verification_failed", null, "build"],
     ["building", null, "verification"],
     ["approved", null, "deployment"],
+    ["anchoring_manifest", null, "deployment"],
     ["approved_not_deployed", null, "deployment"],
+    ["deploying", null, "deployment"],
     ["deployed_unverified", null, "witness"],
+    ["anchoring_receipt", null, "witness"],
     ["reconciliation_required", "deployment", "deployment"],
     ["reconciliation_required", "receipt_anchor", "witness"],
   ] as const)("routes %s to %s", (state, reconciliation, role) => {
@@ -46,8 +49,6 @@ describe("agent routing", () => {
 
   it.each([
     ["awaiting_approval", "wait_for_user"],
-    ["anchoring_manifest", "operation_in_flight"],
-    ["deploying", "operation_in_flight"],
     ["verified", "terminal_state"],
     ["failed", "terminal_state"],
   ] as const)("rejects %s with %s", (state, code) => {

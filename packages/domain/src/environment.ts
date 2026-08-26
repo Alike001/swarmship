@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Hex } from "viem";
 
 const port = z.coerce.number().int().min(1).max(65_535);
 const pollInterval = z.coerce.number().int().min(250).max(60_000);
@@ -10,6 +11,17 @@ const databaseUrl = z
     (value) => ["postgres:", "postgresql:"].includes(new URL(value).protocol),
     "Use a PostgreSQL connection URL.",
   );
+const httpUrl = z
+  .string()
+  .url()
+  .refine(
+    (value) => ["http:", "https:"].includes(new URL(value).protocol),
+    "Use an HTTP or HTTPS RPC URL.",
+  );
+const privateKey = z
+  .string()
+  .regex(/^0x[0-9a-fA-F]{64}$/, "Use a 32-byte EVM private key.")
+  .transform((value) => value as Hex);
 
 const serverEnvironmentSchema = z.object({
   DATABASE_URL: databaseUrl.default(
@@ -34,8 +46,16 @@ const workerEnvironmentSchema = z.object({
   WORKER_RETRY_SECONDS: durationSeconds.default(300),
 });
 
+const workerChainEnvironmentSchema = z.object({
+  ARBITRUM_SEPOLIA_RPC_URL: httpUrl,
+  RELAYER_PRIVATE_KEY: privateKey,
+});
+
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type WorkerEnvironment = z.infer<typeof workerEnvironmentSchema>;
+export type WorkerChainEnvironment = z.infer<
+  typeof workerChainEnvironmentSchema
+>;
 
 export function parseServerEnvironment(
   input: Record<string, string | undefined>,
@@ -47,4 +67,10 @@ export function parseWorkerEnvironment(
   input: Record<string, string | undefined>,
 ): WorkerEnvironment {
   return workerEnvironmentSchema.parse(input);
+}
+
+export function parseWorkerChainEnvironment(
+  input: Record<string, string | undefined>,
+): WorkerChainEnvironment {
+  return workerChainEnvironmentSchema.parse(input);
 }

@@ -87,6 +87,9 @@ importers:
       "@swarmship/builder":
         specifier: workspace:^
         version: link:../../packages/builder
+      "@swarmship/chain":
+        specifier: workspace:^
+        version: link:../../packages/chain
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../../packages/domain
@@ -162,6 +165,9 @@ importers:
       postgres:
         specifier: 3.4.9
         version: 3.4.9
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       viem:
         specifier: 2.55.19

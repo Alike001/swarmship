@@ -9,6 +9,11 @@ export { ApprovalRepository } from "./approval-repository.js";
 export { BuildRepository } from "./build-repository.js";
 export { PersistenceError, type PersistenceErrorCode } from "./errors.js";
 export { LeaseRepository } from "./lease-repository.js";
+export { ManifestAnchorRepository } from "./manifest-anchor-repository.js";
+export {
+  manifestAnchorAttemptSchema,
+  type ManifestAnchorAttempt,
+} from "./manifest-anchor-model.js";
 export { ReleaseRepository } from "./release-repository.js";
 export { SpecificationRepository } from "./specification-repository.js";
 export { VerificationRepository } from "./verification-repository.js";
@@ -20,6 +25,8 @@ export type {
   CreateReleaseResult,
   DeferredReleaseError,
   IdempotencyInput,
+  ManifestAnchorOutcomeInput,
+  ManifestAnchorPreparedInput,
   ReleaseLease,
   ReleaseApprovalRequest,
   ReleaseRow,
