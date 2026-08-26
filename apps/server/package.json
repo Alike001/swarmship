@@ -6,12 +6,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx --conditions=development watch src/index.ts",
+    "mcp": "node dist/mcp-stdio.js",
     "start": "node dist/index.js",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "@swarmship/domain": "workspace:^",
     "@swarmship/persistence": "workspace:^",
     "hono": "4.13.4",

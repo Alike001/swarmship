@@ -2,6 +2,7 @@ import { Agent, type Model } from "@openai/agents";
 
 import { specificationAgentOutputSchema } from "./schemas.js";
 import {
+  AGENT_TOOL_NAMES,
   createAgentTools,
   type AgentToolExecutors,
   type SwarmShipAgentContext,
@@ -30,13 +31,18 @@ export type SwarmShipAgents = ReturnType<typeof createSwarmShipAgents>;
 export function createSwarmShipAgents(options: {
   model: string | Model;
   executors: AgentToolExecutors;
+  witnessModel?: string | Model;
 }) {
   const tools = createAgentTools(options.executors);
   const boundedModel = {
     retry: { maxRetries: 0 },
     timeoutMs: 45_000,
   } as const;
-  const requiredTool = { ...boundedModel, toolChoice: "required" as const };
+  const requiredTool = {
+    ...boundedModel,
+    parallelToolCalls: false,
+    toolChoice: "required" as const,
+  };
 
   return {
     specification: new Agent<
@@ -81,8 +87,12 @@ export function createSwarmShipAgents(options: {
     witness: new Agent<SwarmShipAgentContext, "text">({
       name: "SwarmShip Witness Agent",
       instructions: AGENT_INSTRUCTIONS.witness,
-      model: options.model,
-      modelSettings: requiredTool,
+      model: options.witnessModel ?? options.model,
+      modelSettings: {
+        ...requiredTool,
+        toolChoice: AGENT_TOOL_NAMES.witness,
+      },
+      toolUseBehavior: "stop_on_first_tool",
       outputType: "text",
       tools: [tools.witness],
       handoffs: [],

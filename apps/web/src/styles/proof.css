@@ -145,6 +145,33 @@
 .proof-home {
   margin-top: 2rem;
 }
+.approval-action {
+  align-items: center;
+  background: var(--plum);
+  border: 1px solid var(--violet);
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: 1.2fr 0.8fr;
+  margin-bottom: 5rem;
+  padding: clamp(2rem, 5vw, 4rem);
+}
+.approval-action h2 {
+  font-size: clamp(2rem, 3.5vw, 3.5rem);
+  letter-spacing: -0.055em;
+  line-height: 1;
+  margin: 0.8rem 0 1rem;
+}
+.approval-controls {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.approval-controls code {
+  color: var(--lavender);
+  font-size: 0.72rem;
+  overflow-wrap: anywhere;
+}
 .proof-loading {
   display: grid;
   min-height: 100vh;

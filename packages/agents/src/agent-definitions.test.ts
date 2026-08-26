@@ -41,7 +41,10 @@ describe("SwarmShip agent definitions", () => {
     expect(agents.build.modelSettings.toolChoice).toBe("required");
     expect(agents.verification.modelSettings.toolChoice).toBe("required");
     expect(agents.deployment.modelSettings.toolChoice).toBe("required");
-    expect(agents.witness.modelSettings.toolChoice).toBe("required");
+    expect(agents.witness.modelSettings.toolChoice).toBe(
+      "read_independent_evidence",
+    );
+    expect(agents.witness.modelSettings.parallelToolCalls).toBe(false);
   });
 
   it("bounds every provider call within the worker lease", () => {

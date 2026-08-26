@@ -6,6 +6,7 @@ import "@fontsource/ibm-plex-mono/400.css";
 
 import { App } from "./App.js";
 import "./styles.css";
+import "./styles/docs.css";
 import "./styles/landing.css";
 import "./styles/proof.css";
 import "./styles/release.css";

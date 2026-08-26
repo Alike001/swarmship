@@ -18,6 +18,7 @@ await runMigrations(database);
 const app = createApp({
   approvals: new ApprovalRepository(database),
   releases: new ReleaseRepository(database),
+  webOrigin: environment.WEB_ORIGIN,
 });
 
 serve(

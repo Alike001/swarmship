@@ -1,18 +1,57 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
 import { PRODUCT } from "@swarmship/domain";
-import { PersistenceError } from "@swarmship/persistence";
+import type { PersistenceErrorCode } from "@swarmship/persistence";
 
 import { registerApprovalRoutes, type ApprovalStore } from "./approval-api.js";
+import { createMcpReleaseService, registerMcpRoutes } from "./mcp.js";
 import { registerReleaseRoutes, type ReleaseStore } from "./release-api.js";
 
 export type AppDependencies = {
   approvals: ApprovalStore;
   releases: ReleaseStore;
+  webOrigin?: string;
 };
+
+const persistenceErrorCodes: readonly PersistenceErrorCode[] = [
+  "approval_conflict",
+  "idempotency_conflict",
+  "release_not_found",
+  "transition_rejected",
+  "transition_conflict",
+  "lease_lost",
+];
+
+function isPersistenceError(
+  error: Error,
+): error is Error & { code: PersistenceErrorCode } {
+  if (error.name !== "PersistenceError" || !("code" in error)) return false;
+  return persistenceErrorCodes.includes(
+    (error as Error & { code: PersistenceErrorCode }).code,
+  );
+}
 
 export function createApp(dependencies: AppDependencies) {
   const app = new Hono();
+  const webOrigin = dependencies.webOrigin ?? "http://127.0.0.1:4318";
+
+  app.use(
+    "/api/*",
+    cors({
+      allowHeaders: [
+        "Content-Type",
+        "Idempotency-Key",
+        "Last-Event-ID",
+        "Mcp-Protocol-Version",
+        "Mcp-Session-Id",
+      ],
+      allowMethods: ["DELETE", "GET", "POST", "OPTIONS"],
+      exposeHeaders: ["Location", "Mcp-Protocol-Version", "Mcp-Session-Id"],
+      maxAge: 600,
+      origin: (origin) => (origin === webOrigin ? origin : ""),
+    }),
+  );
 
   app.get("/api/health", (context) =>
     context.json({
@@ -23,9 +62,14 @@ export function createApp(dependencies: AppDependencies) {
   );
   registerReleaseRoutes(app, dependencies.releases);
   registerApprovalRoutes(app, dependencies.approvals);
+  registerMcpRoutes(
+    app,
+    createMcpReleaseService(dependencies.releases),
+    webOrigin,
+  );
 
   app.onError((error, context) => {
-    if (error instanceof PersistenceError) {
+    if (isPersistenceError(error)) {
       const status =
         error.code === "release_not_found"
           ? 404

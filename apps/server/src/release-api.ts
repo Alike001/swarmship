@@ -35,14 +35,14 @@ const safeErrorSchema = z.strictObject({
   message: z.string().min(1).max(300),
 });
 
-function requestHash(request: string): `0x${string}` {
+export function requestHash(request: string): `0x${string}` {
   const digest = createHash("sha256")
     .update(JSON.stringify({ request }))
     .digest("hex");
   return `0x${digest}`;
 }
 
-function presentTransition(transition: ReleaseTransitionRow) {
+export function presentTransition(transition: ReleaseTransitionRow) {
   return {
     actor: transition.actor,
     createdAt: transition.createdAt.toISOString(),
@@ -59,7 +59,7 @@ function presentTransition(transition: ReleaseTransitionRow) {
   };
 }
 
-function presentRelease(release: ReleaseRow) {
+export function presentRelease(release: ReleaseRow) {
   const safeError = safeErrorSchema.safeParse(release.safeError);
   const build =
     release.buildEvidence === null
@@ -127,7 +127,7 @@ function presentRelease(release: ReleaseRow) {
     createdAt: release.createdAt.toISOString(),
     links: {
       approval: `/api/releases/${release.id}/approval`,
-      proof: `/proof/${release.publicId}`,
+      proof: `/?proof=${release.publicId}`,
       self: `/api/releases/${release.id}`,
     },
     publicId: release.publicId,

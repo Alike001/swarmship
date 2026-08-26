@@ -1,0 +1,108 @@
+.docs-page main {
+  display: grid;
+  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: 14rem minmax(0, 54rem);
+  margin: 0 auto;
+  max-width: 94rem;
+  padding: clamp(3rem, 7vw, 7rem) 2rem 7rem;
+}
+.docs-page aside {
+  align-self: start;
+  position: sticky;
+  top: 2rem;
+}
+.docs-page aside nav {
+  border-top: 1px solid var(--line);
+  display: grid;
+  margin-top: 1.2rem;
+}
+.docs-page aside nav a {
+  border-bottom: 1px solid var(--line);
+  color: var(--lavender);
+  padding: 0.9rem 0;
+}
+.docs-page aside nav a:hover,
+.docs-page aside nav a[aria-current="page"] {
+  color: #fff;
+  padding-left: 0.7rem;
+}
+.docs-page aside nav a[aria-current="page"] {
+  border-left: 2px solid var(--violet);
+}
+.docs-proof-link {
+  color: var(--teal);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  margin-top: 1.5rem;
+}
+.docs-page article > header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 3rem;
+}
+.docs-page h1 {
+  font-size: clamp(3rem, 6vw, 6rem);
+  letter-spacing: -0.065em;
+  line-height: 0.96;
+  margin: 1rem 0 1.5rem;
+}
+.docs-page article > header p {
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  max-width: 46rem;
+}
+.docs-page article > section {
+  border-bottom: 1px solid var(--line);
+  padding: 2.5rem 0;
+}
+.docs-page h2 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.04em;
+  margin-bottom: 0.8rem;
+}
+.docs-page article section p,
+.docs-page article section ul {
+  max-width: 46rem;
+}
+.docs-page li {
+  color: var(--lavender);
+  line-height: 1.55;
+  margin: 0.55rem 0;
+}
+.docs-page pre {
+  background: var(--plum);
+  border: 1px solid rgba(199, 93, 255, 0.55);
+  color: #fff;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  margin: 1.5rem 0 0;
+  overflow-x: auto;
+  padding: 1.25rem;
+  white-space: pre-wrap;
+}
+.docs-next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding-top: 3rem;
+}
+
+@media (max-width: 760px) {
+  .docs-page main {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 1rem 5rem;
+  }
+  .docs-page aside {
+    position: static;
+  }
+  .docs-page aside nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .docs-page aside nav a {
+    padding-right: 0.5rem;
+  }
+  .docs-next,
+  .docs-next .button {
+    width: 100%;
+  }
+}

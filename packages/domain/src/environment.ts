@@ -32,6 +32,7 @@ const serverEnvironmentSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: port.default(3_000),
+  WEB_ORIGIN: httpUrl.default("http://127.0.0.1:4318"),
 });
 
 const workerEnvironmentSchema = z.object({

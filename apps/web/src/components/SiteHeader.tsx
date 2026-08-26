@@ -8,8 +8,8 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       </a>
       <nav aria-label="Primary navigation">
         {!compact && <a href="#product">Product</a>}
-        <a href="#docs">Docs</a>
-        <a href="#mcp">MCP</a>
+        <a href="/?docs=overview">Docs</a>
+        <a href="/?docs=mcp">MCP</a>
         {!compact && (
           <a className="button button-small" href="#release">
             Start a release

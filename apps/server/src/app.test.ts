@@ -19,6 +19,26 @@ function testApp() {
 }
 
 describe("server routes", () => {
+  it("allows only the configured browser origin", async () => {
+    const { approvals, releases } = testApp();
+    const app = createApp({
+      approvals,
+      releases,
+      webOrigin: "https://swarmship.vercel.app",
+    });
+    const allowed = await app.request("/api/health", {
+      headers: { origin: "https://swarmship.vercel.app" },
+    });
+    const untrusted = await app.request("/api/health", {
+      headers: { origin: "https://untrusted.example" },
+    });
+
+    expect(allowed.headers.get("access-control-allow-origin")).toBe(
+      "https://swarmship.vercel.app",
+    );
+    expect(untrusted.headers.get("access-control-allow-origin")).toBeNull();
+  });
+
   it("returns the real service identity", async () => {
     const response = await testApp().app.request("/api/health");
 
@@ -112,6 +132,31 @@ describe("server routes", () => {
 
     expect(response.status).toBe(400);
     expect(releases.getByPublicId).not.toHaveBeenCalled();
+  });
+
+  it("preserves safe persistence errors across a serverless bundle boundary", async () => {
+    const foreignPersistenceError = Object.assign(
+      new Error("Only the contract owner can approve this release."),
+      {
+        code: "transition_rejected" as const,
+        name: "PersistenceError",
+      },
+    );
+    const { approvals, releases } = testApp();
+    vi.mocked(approvals.getRequest).mockRejectedValue(foreignPersistenceError);
+    const app = createApp({ approvals, releases });
+
+    const response = await app.request(
+      "/api/releases/00000000-0000-4000-8000-000000000000/approval",
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: "transition_rejected",
+        message: "Only the contract owner can approve this release.",
+      },
+    });
   });
 
   it("does not expose an unexpected persistence error", async () => {

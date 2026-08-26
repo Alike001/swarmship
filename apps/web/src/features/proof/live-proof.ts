@@ -42,6 +42,11 @@ export const liveProof: PublicRelease = {
     request:
       "Create a bounded agent task registry where approved agents can create and complete tasks.",
     safeError: null,
+    specification: {
+      owner: "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71",
+      permittedReceiver: "0x1111111111111111111111111111111111111111",
+      permittedSender: "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71",
+    },
     specificationSummary:
       "Owner-controlled agent access, bounded task creation, and one-time completion on Arbitrum Sepolia.",
     state: "verified",
@@ -56,6 +61,7 @@ export const liveProof: PublicRelease = {
       ],
       status: "passed",
     },
+    version: 7,
   },
   transitions: [
     {

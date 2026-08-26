@@ -98,3 +98,30 @@ test("never presents a missing proof as verified", async ({ page }) => {
     0,
   );
 });
+
+test("starts and reads a real hosted release", async ({ page }) => {
+  test.skip(
+    process.env.E2E_LIVE_WRITES !== "1",
+    "Production writes run only through the explicit hosted smoke gate.",
+  );
+  await page.goto("/#release");
+
+  await page
+    .getByRole("button", { name: "Start the five-agent relay" })
+    .click();
+  await expect(page.getByText("Request accepted")).toBeVisible();
+  const proofLink = page.getByRole("link", { name: "Open public proof" });
+  await expect(proofLink).toBeVisible();
+  await proofLink.click();
+
+  await expect(page.getByText("Release in progress")).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "This release has not produced complete public proof yet.",
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Not available yet").first()).toBeVisible();
+  await expect(page.getByText("Verified release", { exact: true })).toHaveCount(
+    0,
+  );
+});

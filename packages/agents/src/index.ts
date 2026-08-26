@@ -49,3 +49,4 @@ export {
   type SwarmShipAgentContext,
   type ToolAgentRole,
 } from "./tools.js";
+export { WitnessToolRouterModel } from "./witness-model.js";

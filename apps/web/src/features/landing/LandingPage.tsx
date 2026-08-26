@@ -69,7 +69,7 @@ export function LandingPage() {
             <a className="button" href="#release">
               Start a release
             </a>
-            <a className="button button-secondary" href="#docs">
+            <a className="button button-secondary" href="/?docs=overview">
               Read the documentation
             </a>
           </div>
@@ -79,10 +79,8 @@ export function LandingPage() {
         <BrandMark />
         <nav aria-label="Footer navigation">
           <a href="#product">Product</a>
-          <a href="#docs">Docs</a>
-          <a href="#mcp" id="mcp">
-            MCP
-          </a>
+          <a href="/?docs=overview">Docs</a>
+          <a href="/?docs=mcp">MCP</a>
           <a href="/?proof=live">Public Proof</a>
           <a href="https://github.com/Alike001/swarmship">GitHub</a>
           <a href="https://sepolia.arbiscan.io/address/0x2f48240834a18d03753926B3a59aBA3541fc1962">

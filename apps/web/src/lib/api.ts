@@ -23,6 +23,11 @@ export type ReleaseProjection = {
   releaseId: string;
   request: string;
   safeError: null | { code: string; message: string };
+  specification: null | {
+    owner: string;
+    permittedReceiver: string;
+    permittedSender: string;
+  };
   specificationSummary: string | null;
   state: string;
   verification: null | {
@@ -30,6 +35,7 @@ export type ReleaseProjection = {
     checks: { name: string; status: string }[];
     status: string;
   };
+  version: number;
 };
 
 export type PublicRelease = {
@@ -40,6 +46,11 @@ export type PublicRelease = {
     safeSummary: string | null;
     toState: string;
   }[];
+};
+
+export type ApprovalRequest = {
+  digest: string;
+  typedData: Record<string, unknown>;
 };
 
 const apiBase =
@@ -85,4 +96,30 @@ export async function getPublicRelease(
     `${apiBase}/api/public/releases/${encodeURIComponent(publicId)}`,
   );
   return (await readJson(response)) as PublicRelease;
+}
+
+export async function getApprovalRequest(
+  releaseId: string,
+): Promise<ApprovalRequest> {
+  const response = await fetch(
+    `${apiBase}/api/releases/${encodeURIComponent(releaseId)}/approval`,
+  );
+  const data = (await readJson(response)) as { approval: ApprovalRequest };
+  return data.approval;
+}
+
+export async function approveRelease(
+  releaseId: string,
+  expectedVersion: number,
+  signature: string,
+): Promise<void> {
+  const response = await fetch(
+    `${apiBase}/api/releases/${encodeURIComponent(releaseId)}/approval`,
+    {
+      body: JSON.stringify({ expectedVersion, signature }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    },
+  );
+  await readJson(response);
 }

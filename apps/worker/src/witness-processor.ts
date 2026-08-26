@@ -4,6 +4,7 @@ import {
   createSwarmShipAgents,
   proposeAgentTransition,
   runSelectedAgent,
+  WitnessToolRouterModel,
   type AgentToolExecutors,
 } from "@swarmship/agents";
 import type {
@@ -162,7 +163,11 @@ export async function processOneWitness(
       reconciliation: lease.release.reconciliationKind,
     };
     const result = await runSelectedAgent({
-      agents: createSwarmShipAgents({ executors, model: dependencies.model }),
+      agents: createSwarmShipAgents({
+        executors,
+        model: dependencies.model,
+        witnessModel: new WitnessToolRouterModel(),
+      }),
       releaseId: lease.release.id,
       snapshot,
       prompt:

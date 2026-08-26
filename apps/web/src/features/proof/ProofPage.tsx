@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SiteHeader } from "../../components/SiteHeader.js";
 import { getPublicRelease, type PublicRelease } from "../../lib/api.js";
+import { ApprovalAction } from "./ApprovalAction.js";
 import { liveProof } from "./live-proof.js";
 
 const explorer = "https://sepolia.arbiscan.io";
@@ -78,6 +79,14 @@ export function ProofPage({ proofId }: { proofId: string }) {
             ))}
           </ol>
         </section>
+
+        {release.state === "awaiting_approval" && release.specification && (
+          <ApprovalAction
+            owner={release.specification.owner}
+            releaseId={release.releaseId}
+            version={release.version}
+          />
+        )}
 
         <section className="proof-details" aria-labelledby="evidence-title">
           <div>

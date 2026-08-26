@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { createRelease, type ReleaseProjection } from "../../lib/api.js";
 
 const example =
-  "Create an agent task registry where only the owner can approve agents, approved agents can create and complete tasks, and the registry holds at most 100 tasks.";
+  "Create an agent task registry owned by 0xdE67A35B322e5A31e8215B5245CA4e48d7977F71, where 0xdE67A35B322e5A31e8215B5245CA4e48d7977F71 may hand tasks to 0x1111111111111111111111111111111111111111, with at most 100 handoffs, expiring January 1, 2027 at 00:00 UTC.";
 
 export function ReleaseIntake() {
   const idempotencyKey = useRef(crypto.randomUUID());

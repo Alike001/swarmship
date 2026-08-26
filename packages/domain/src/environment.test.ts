@@ -13,6 +13,7 @@ describe("environment validation", () => {
       HOST: "127.0.0.1",
       NODE_ENV: "development",
       PORT: 3_000,
+      WEB_ORIGIN: "http://127.0.0.1:4318",
     });
     expect(parseWorkerEnvironment({})).toEqual({
       DATABASE_URL: "postgres://postgres@127.0.0.1:5432/postgres",
@@ -25,6 +26,12 @@ describe("environment validation", () => {
 
   it.each(["0", "65536", "not-a-port"])("rejects invalid port %s", (PORT) => {
     expect(() => parseServerEnvironment({ PORT })).toThrow();
+  });
+
+  it("rejects a non-HTTP browser origin", () => {
+    expect(() =>
+      parseServerEnvironment({ WEB_ORIGIN: "file:///tmp" }),
+    ).toThrow();
   });
 
   it.each(["not a URL", "https://database.example.com"])(
