@@ -14,10 +14,10 @@
   z-index: 2;
 }
 .hero h1 {
-  font-size: clamp(3.3rem, 6vw, 6.6rem);
-  font-weight: 680;
-  letter-spacing: -0.07em;
-  line-height: 0.92;
+  font-size: clamp(2.9rem, 5vw, 5.2rem);
+  font-weight: 620;
+  letter-spacing: -0.06em;
+  line-height: 0.98;
   margin-top: 1.25rem;
 }
 .hero p {
@@ -197,15 +197,16 @@
   top: 2rem;
 }
 .trust-heading h2 {
-  font-size: clamp(2.3rem, 4vw, 4.4rem);
+  font-size: clamp(2.1rem, 3.4vw, 3.6rem);
+  font-weight: 600;
   letter-spacing: -0.06em;
   line-height: 0.98;
   margin-top: 1rem;
 }
 .trust-heading p {
   color: var(--violet);
-  font-size: 1.6rem;
-  font-weight: 650;
+  font-size: 1.35rem;
+  font-weight: 600;
   margin-top: 1.3rem;
 }
 .evidence-stack {

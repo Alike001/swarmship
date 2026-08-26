@@ -9,7 +9,8 @@
   padding: clamp(2rem, 5vw, 5rem);
 }
 .intake-heading h2 {
-  font-size: clamp(2rem, 3.5vw, 3.8rem);
+  font-size: clamp(1.9rem, 3vw, 3.2rem);
+  font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 1;
   margin-top: 1rem;
@@ -74,7 +75,8 @@
   padding: clamp(2rem, 4vw, 3.5rem);
 }
 .final-cta h2 {
-  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  font-size: clamp(1.7rem, 2.6vw, 2.7rem);
+  font-weight: 600;
   letter-spacing: -0.05em;
 }
 .final-cta > div {
