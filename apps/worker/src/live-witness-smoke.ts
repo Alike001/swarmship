@@ -1,5 +1,6 @@
 import { Usage, type ModelResponse } from "@openai/agents";
 import { ScriptedModel } from "@openai/agents/testing";
+import { WitnessToolRouterModel } from "@swarmship/agents";
 import {
   broadcastHeroAnchor,
   confirmHeroAnchor,
@@ -28,7 +29,9 @@ import {
 import { processOneWitness } from "./witness-processor.js";
 
 const NOW = 1_800_000_004;
-const PUBLIC_ID = "release_manifest_anchor_smoke_v1";
+const PUBLIC_ID =
+  process.env.LIVE_RELEASE_PUBLIC_ID ?? "release_manifest_anchor_smoke_v1";
+const isProductionRelease = process.env.LIVE_RELEASE_PUBLIC_ID !== undefined;
 
 function response(...output: ModelResponse["output"]): ModelResponse {
   return { output, usage: new Usage() };
@@ -118,8 +121,11 @@ try {
       inspectWitness: () => inspectHeroDeployment(witnessClient),
       leaseSeconds: 900,
       leases: scopedLeases,
-      model: witnessModel(),
-      nowUnixSeconds: () => NOW,
+      model: isProductionRelease
+        ? new WitnessToolRouterModel()
+        : witnessModel(),
+      nowUnixSeconds: () =>
+        isProductionRelease ? Math.floor(Date.now() / 1_000) : NOW,
       observeDeployment: (release) => {
         const attempt = release.deploymentAttempt;
         if (
@@ -166,7 +172,9 @@ try {
           verificationEvidence: release.verificationEvidence,
         });
       },
-      workerId: "witness-smoke",
+      workerId: isProductionRelease
+        ? "witness-production-recovery"
+        : "witness-smoke",
     });
 
   const steps = [];

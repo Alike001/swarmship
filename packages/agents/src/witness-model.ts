@@ -30,9 +30,15 @@ export class WitnessToolRouterModel implements Model {
     };
   }
 
-  async *getStreamedResponse(
-    _request: ModelRequest,
-  ): AsyncIterable<StreamEvent> {
-    throw new Error("The Witness router does not support streaming.");
+  getStreamedResponse(_request: ModelRequest): AsyncIterable<StreamEvent> {
+    return {
+      [Symbol.asyncIterator]() {
+        return {
+          next: async (): Promise<IteratorResult<StreamEvent>> => {
+            throw new Error("The Witness router does not support streaming.");
+          },
+        };
+      },
+    };
   }
 }
