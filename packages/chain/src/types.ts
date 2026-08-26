@@ -114,3 +114,28 @@ export type StylusDeploymentReconciliation =
         | "transaction_not_found"
         | "configuration_mismatch";
     };
+
+export type StylusWitnessObservation =
+  | {
+      status: "confirmed";
+      chainId: number;
+      blockNumber: bigint;
+      codeHash: Hex;
+      inspection: StylusRegistryInspection;
+      nonce: number;
+      sender: Address;
+      transactionHash: Hash;
+    }
+  | {
+      status: "mismatch" | "unknown";
+      reason:
+        | "address_mismatch"
+        | "configuration_mismatch"
+        | "deployment_event_missing"
+        | "deployment_reverted"
+        | "receipt_unavailable"
+        | "registry_read_failed"
+        | "rpc_unavailable"
+        | "transaction_unavailable"
+        | "wrong_chain";
+    };

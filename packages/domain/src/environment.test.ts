@@ -51,17 +51,32 @@ describe("environment validation", () => {
     expect(
       parseWorkerChainEnvironment({
         ARBITRUM_SEPOLIA_RPC_URL: "https://sepolia-rollup.arbitrum.io/rpc",
+        ARBITRUM_SEPOLIA_WITNESS_RPC_URL: "https://arb-sepolia.example.test",
         RELAYER_PRIVATE_KEY: key,
       }),
     ).toEqual({
       ARBITRUM_SEPOLIA_RPC_URL: "https://sepolia-rollup.arbitrum.io/rpc",
+      ARBITRUM_SEPOLIA_WITNESS_RPC_URL: "https://arb-sepolia.example.test",
       RELAYER_PRIVATE_KEY: key,
     });
     expect(() =>
       parseWorkerChainEnvironment({
         ARBITRUM_SEPOLIA_RPC_URL: "file:///tmp/rpc",
+        ARBITRUM_SEPOLIA_WITNESS_RPC_URL: "https://arb-sepolia.example.test",
         RELAYER_PRIVATE_KEY: "0x1234",
       }),
     ).toThrow();
+  });
+
+  it("rejects a witness endpoint that is identical to the write endpoint", () => {
+    const key = `0x${"1".repeat(64)}`;
+    expect(() =>
+      parseWorkerChainEnvironment({
+        ARBITRUM_SEPOLIA_RPC_URL: "https://sepolia-rollup.arbitrum.io/rpc",
+        ARBITRUM_SEPOLIA_WITNESS_RPC_URL:
+          "https://sepolia-rollup.arbitrum.io/rpc",
+        RELAYER_PRIVATE_KEY: key,
+      }),
+    ).toThrow("The witness RPC must be independent");
   });
 });

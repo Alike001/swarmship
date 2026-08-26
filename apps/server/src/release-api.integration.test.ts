@@ -184,6 +184,62 @@ describe("persisted release API", () => {
     expect(JSON.stringify(result)).not.toContain("private tool details");
   });
 
+  it("exposes bounded deployment and receipt proof fields", async () => {
+    const created = await postRelease(
+      "release-receipt-evidence",
+      "Create and witness a bounded registry for approved agents.",
+    );
+    const body = (await created.json()) as {
+      release: { releaseId: string };
+    };
+    const deploymentTransaction = `0x${"8".repeat(64)}`;
+    const receiptRoot = `0x${"9".repeat(64)}`;
+    const contractAddress = "0x0000000000000000000000000000000000000005";
+    await testDatabase`
+      UPDATE releases
+      SET deployment_attempt = ${testDatabase.json({
+        artifactHash: `0x${"4".repeat(64)}`,
+        contractAddress,
+        status: "confirmed",
+        transactionHash: deploymentTransaction,
+        verificationStatus: "passed",
+      })},
+          receipt_evidence = ${testDatabase.json({
+            officialChainId: 421614,
+            receipt: {
+              deployedAddress: contractAddress,
+              deploymentTransaction,
+            },
+            receiptRoot,
+            witnessChainId: 421614,
+          })},
+          receipt_anchor_attempt = ${testDatabase.json({
+            proofRoot: receiptRoot,
+            status: "confirmed",
+            transactionHash: `0x${"a".repeat(64)}`,
+          })}
+      WHERE id = ${body.release.releaseId}
+    `;
+
+    const read = await app.request(`/api/releases/${body.release.releaseId}`);
+    const result = (await read.json()) as { release: unknown };
+    expect(result.release).toMatchObject({
+      deployment: {
+        contractAddress,
+        transactionHash: deploymentTransaction,
+        verificationStatus: "passed",
+      },
+      receipt: {
+        anchorStatus: "confirmed",
+        officialChainId: 421614,
+        receiptRoot,
+        witnessChainId: 421614,
+      },
+    });
+    expect(JSON.stringify(result)).not.toContain("nonce");
+    expect(JSON.stringify(result)).not.toContain("startBlock");
+  });
+
   it("rejects idempotency-key reuse for changed input", async () => {
     await postRelease(
       "conflicting-create",

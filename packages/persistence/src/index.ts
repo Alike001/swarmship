@@ -16,6 +16,13 @@ export {
   type ManifestAnchorAttempt,
 } from "./manifest-anchor-model.js";
 export { ReleaseRepository } from "./release-repository.js";
+export { ReceiptAnchorRepository } from "./receipt-anchor-repository.js";
+export {
+  receiptAnchorAttemptSchema,
+  receiptEvidenceSchema,
+  type ReceiptAnchorAttempt,
+  type ReceiptEvidenceV1,
+} from "./receipt-anchor-model.js";
 export { SpecificationRepository } from "./specification-repository.js";
 export { VerificationRepository } from "./verification-repository.js";
 export type {
@@ -34,6 +41,9 @@ export type {
   ReleaseApprovalRequest,
   ReleaseRow,
   ReleaseTransitionRow,
+  ReceiptAnchorOutcomeInput,
+  ReceiptAnchorPreparedInput,
   SpecificationResultInput,
   VerificationResultInput,
+  WitnessRejectedInput,
 } from "./types.js";

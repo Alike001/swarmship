@@ -46,10 +46,24 @@ const workerEnvironmentSchema = z.object({
   WORKER_RETRY_SECONDS: durationSeconds.default(300),
 });
 
-const workerChainEnvironmentSchema = z.object({
-  ARBITRUM_SEPOLIA_RPC_URL: httpUrl,
-  RELAYER_PRIVATE_KEY: privateKey,
-});
+const workerChainEnvironmentSchema = z
+  .object({
+    ARBITRUM_SEPOLIA_RPC_URL: httpUrl,
+    ARBITRUM_SEPOLIA_WITNESS_RPC_URL: httpUrl,
+    RELAYER_PRIVATE_KEY: privateKey,
+  })
+  .superRefine((environment, context) => {
+    if (
+      environment.ARBITRUM_SEPOLIA_RPC_URL ===
+      environment.ARBITRUM_SEPOLIA_WITNESS_RPC_URL
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["ARBITRUM_SEPOLIA_WITNESS_RPC_URL"],
+        message: "The witness RPC must be independent from the write RPC.",
+      });
+    }
+  });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
 export type WorkerEnvironment = z.infer<typeof workerEnvironmentSchema>;

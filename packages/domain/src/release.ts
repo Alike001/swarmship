@@ -17,6 +17,15 @@ export {
   type ReleaseManifestV1,
 } from "./release-manifest.js";
 export {
+  createReleaseReceipt,
+  hashReleaseReceipt,
+  RELEASE_RECEIPT_DOMAIN,
+  RELEASE_RECEIPT_TYPES,
+  releaseReceiptSchema,
+  toReleaseReceiptTypedData,
+  type ReleaseReceiptV1,
+} from "./release-receipt.js";
+export {
   summarizeTaskRegistrySpec,
   TASK_REGISTRY_CONTRACT_FAMILY,
   taskRegistrySpecSchema,

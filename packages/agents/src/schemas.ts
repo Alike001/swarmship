@@ -85,6 +85,7 @@ export const witnessToolResultSchema = z.strictObject({
   evidenceRef: evidenceRefSchema,
   event: z.enum([
     "witness_confirmed",
+    "witness_rejected",
     "receipt_anchor_confirmed",
     "receipt_anchor_reverted",
     "receipt_anchor_unknown",

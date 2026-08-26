@@ -4,6 +4,7 @@ import type {
   ReleaseEvent,
   ManifestApprovalV1,
   ReleaseManifestV1,
+  ReleaseReceiptV1,
   ReleaseTransitionCommand,
   ReleaseTransitionEffect,
   TaskRegistrySpecV1,
@@ -13,6 +14,10 @@ import type { DeploymentAttempt } from "@swarmship/deployer";
 import type { ReleaseState } from "@swarmship/domain";
 import type { VerificationEvidenceV1 } from "@swarmship/verifier";
 import type { ManifestAnchorAttempt } from "./manifest-anchor-model.js";
+import type {
+  ReceiptAnchorAttempt,
+  ReceiptEvidenceV1,
+} from "./receipt-anchor-model.js";
 
 export type ReleaseRow = {
   id: string;
@@ -29,6 +34,8 @@ export type ReleaseRow = {
   manifestApproval: ManifestApprovalV1 | null;
   manifestAnchorAttempt: ManifestAnchorAttempt | null;
   deploymentAttempt: DeploymentAttempt | null;
+  receiptEvidence: ReceiptEvidenceV1 | null;
+  receiptAnchorAttempt: ReceiptAnchorAttempt | null;
   safeError: unknown | null;
   leaseOwner: string | null;
   leaseToken: string | null;
@@ -171,4 +178,28 @@ export type DeploymentOutcomeInput = {
   releaseId: string;
   summary: string;
   workerId: string;
+};
+
+export type ReceiptAnchorPreparedInput = {
+  attempt: ReceiptAnchorAttempt;
+  command: ReleaseTransitionCommand;
+  evidence: ReceiptEvidenceV1 & { receipt: ReleaseReceiptV1 };
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type ReceiptAnchorOutcomeInput = {
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type WitnessRejectedInput = ReceiptAnchorOutcomeInput & {
+  retrySeconds: number;
 };

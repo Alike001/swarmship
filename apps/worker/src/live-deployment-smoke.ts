@@ -14,7 +14,10 @@ import {
   type StylusVerificationResult,
   verifyApprovedStylusDeployment,
 } from "@swarmship/deployer";
-import { parseWorkerChainEnvironment } from "@swarmship/domain/environment";
+import {
+  parseWorkerChainEnvironment,
+  parseWorkerEnvironment,
+} from "@swarmship/domain/environment";
 import {
   closeDatabase,
   createDatabase,
@@ -32,9 +35,6 @@ import { processOneDeployment } from "./deployment-processor.js";
 
 const NOW = 1_800_000_002;
 const PUBLIC_ID = "release_manifest_anchor_smoke_v1";
-const databaseUrl =
-  process.env.TEST_DATABASE_URL ??
-  "postgres://postgres@127.0.0.1:55432/postgres";
 
 function response(...output: ModelResponse["output"]): ModelResponse {
   return { output, usage: new Usage() };
@@ -72,6 +72,7 @@ function deploymentModel(): ScriptedModel {
 }
 
 const chainEnvironment = parseWorkerChainEnvironment(process.env);
+const workerEnvironment = parseWorkerEnvironment(process.env);
 const publicClient = createHeroPublicClient(
   chainEnvironment.ARBITRUM_SEPOLIA_RPC_URL,
 );
@@ -82,7 +83,7 @@ const walletClient = createHeroWalletClient(
 const account = walletClient.account;
 if (account === undefined)
   throw new Error("The relayer account is unavailable.");
-const database = createDatabase(databaseUrl, {
+const database = createDatabase(workerEnvironment.DATABASE_URL, {
   applicationName: "swarmship-deployment-smoke",
 });
 

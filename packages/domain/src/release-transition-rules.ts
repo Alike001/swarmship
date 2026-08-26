@@ -125,6 +125,11 @@ export const RELEASE_TRANSITION_RULES = {
     from: ["deployed_unverified"],
     to: "anchoring_receipt",
   },
+  witness_rejected: {
+    actor: "witness",
+    from: ["deployed_unverified"],
+    to: "deployed_unverified",
+  },
   receipt_anchor_confirmed: {
     actor: "witness",
     from: ["anchoring_receipt"],

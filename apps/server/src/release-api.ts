@@ -90,6 +90,36 @@ function presentRelease(release: ReleaseRow) {
           digest: release.manifestApproval.digest,
           signer: release.manifestApproval.signer,
         };
+  const manifestAnchor =
+    release.manifestAnchorAttempt === null
+      ? null
+      : {
+          proofRoot: release.manifestAnchorAttempt.proofRoot,
+          status: release.manifestAnchorAttempt.status,
+          transactionHash: release.manifestAnchorAttempt.transactionHash,
+        };
+  const deployment =
+    release.deploymentAttempt === null
+      ? null
+      : {
+          artifactHash: release.deploymentAttempt.artifactHash,
+          contractAddress: release.deploymentAttempt.contractAddress,
+          status: release.deploymentAttempt.status,
+          transactionHash: release.deploymentAttempt.transactionHash,
+          verificationStatus: release.deploymentAttempt.verificationStatus,
+        };
+  const receipt =
+    release.receiptEvidence === null
+      ? null
+      : {
+          anchorStatus: release.receiptAnchorAttempt?.status ?? null,
+          anchorTransactionHash:
+            release.receiptAnchorAttempt?.transactionHash ?? null,
+          officialChainId: release.receiptEvidence.officialChainId,
+          receipt: release.receiptEvidence.receipt,
+          receiptRoot: release.receiptEvidence.receiptRoot,
+          witnessChainId: release.receiptEvidence.witnessChainId,
+        };
   return {
     approval,
     build,
@@ -101,6 +131,8 @@ function presentRelease(release: ReleaseRow) {
     },
     publicId: release.publicId,
     missingFields: release.missingFields ?? [],
+    manifestAnchor,
+    deployment,
     reconciliationKind: release.reconciliationKind,
     releaseId: release.id,
     request: release.originalRequest,
@@ -108,6 +140,7 @@ function presentRelease(release: ReleaseRow) {
     specification: release.specification,
     specificationSummary: release.specificationSummary,
     state: release.state,
+    receipt,
     updatedAt: release.updatedAt.toISOString(),
     verification,
     version: release.version,

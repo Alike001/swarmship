@@ -13,6 +13,7 @@
     "test:live:deployment": "node --conditions=development --env-file=.env --import tsx src/live-deployment-smoke.ts",
     "test:live:deployment-preflight": "node --conditions=development --env-file=.env --import tsx src/live-deployment-preflight.ts",
     "test:live:verification": "node --conditions=development --env-file=.env --import tsx src/live-verification-smoke.ts",
+    "test:live:witness": "node --conditions=development --env-file=.env --import tsx src/live-witness-smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

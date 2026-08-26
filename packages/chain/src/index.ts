@@ -39,6 +39,7 @@ export {
   prepareStylusDeployment,
   reconcileStylusDeployment,
 } from "./stylus-reconciliation.js";
+export { observeStylusRelease } from "./stylus-witness.js";
 export type {
   ExistingHeroAnchor,
   HeroAnchorBroadcast,
@@ -53,4 +54,5 @@ export type {
   StylusDeploymentConfirmation,
   StylusDeploymentReconciliation,
   StylusRegistryInspection,
+  StylusWitnessObservation,
 } from "./types.js";
