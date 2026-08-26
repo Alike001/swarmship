@@ -43,6 +43,22 @@ describe("ReleaseRepository", () => {
     expect(countRows[0]?.count).toBe("1");
   });
 
+  it("reads a release through its public proof identifier", async () => {
+    const { release } = await repository.create({
+      originalRequest: "Create a bounded registry.",
+    });
+
+    await expect(
+      repository.getByPublicId(release.publicId),
+    ).resolves.toMatchObject({
+      id: release.id,
+      publicId: release.publicId,
+    });
+    await expect(
+      repository.getByPublicId(`release_${"f".repeat(32)}`),
+    ).resolves.toBeNull();
+  });
+
   it("creates one release when identical requests arrive concurrently", async () => {
     const input = {
       originalRequest: "Create a bounded registry.",

@@ -1,17 +1,8 @@
-import { PRODUCT } from "@swarmship/domain";
+import { LandingPage } from "./features/landing/LandingPage.js";
+import { ProofPage } from "./features/proof/ProofPage.js";
 
 export function App() {
-  return (
-    <main className="foundation-shell">
-      <div className="foundation-mark" aria-hidden="true">
-        S
-      </div>
-      <h1>{PRODUCT.name}</h1>
-      <p>{PRODUCT.tagline}</p>
-      <small>
-        Foundation verification surface. The approved Proof Relay interface is
-        the next frontend slice.
-      </small>
-    </main>
-  );
+  const proofId = new URLSearchParams(window.location.search).get("proof");
+
+  return proofId ? <ProofPage proofId={proofId} /> : <LandingPage />;
 }

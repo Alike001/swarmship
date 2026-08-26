@@ -59,6 +59,13 @@ export class ReleaseRepository {
     return release ?? null;
   }
 
+  async getByPublicId(publicId: string): Promise<ReleaseRow | null> {
+    const [release] = await this.database<ReleaseRow[]>`
+      SELECT * FROM releases WHERE public_id = ${publicId}
+    `;
+    return release ?? null;
+  }
+
   async listTransitions(releaseId: string): Promise<ReleaseTransitionRow[]> {
     return this.database<ReleaseTransitionRow[]>`
       SELECT * FROM release_transitions

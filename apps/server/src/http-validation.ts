@@ -6,6 +6,10 @@ export const releaseIdSchema = z
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   );
 
+export const publicReleaseIdSchema = z
+  .string()
+  .regex(/^release_[0-9a-f]{32}$/i);
+
 export function jsonError(code: string, message: string) {
   return { error: { code, message } };
 }

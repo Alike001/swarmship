@@ -87,6 +87,28 @@ describe("persisted release API", () => {
     });
   });
 
+  it("reads the same safe projection through the public proof route", async () => {
+    const created = await postRelease(
+      "release-public-proof",
+      "Create a registry where approved agents can record bounded tasks.",
+    );
+    const body = (await created.json()) as {
+      release: { publicId: string; releaseId: string };
+    };
+
+    const read = await app.request(
+      `/api/public/releases/${body.release.publicId}`,
+    );
+    expect(read.status).toBe(200);
+    await expect(read.json()).resolves.toMatchObject({
+      release: {
+        publicId: body.release.publicId,
+        releaseId: body.release.releaseId,
+      },
+      transitions: [],
+    });
+  });
+
   it("returns one release for concurrent identical requests", async () => {
     const request =
       "Create a bounded registry for two approved agent addresses.";

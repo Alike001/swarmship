@@ -12,6 +12,7 @@ function testApp() {
   const releases: ReleaseStore = {
     create: vi.fn(),
     get: vi.fn(),
+    getByPublicId: vi.fn(),
     listTransitions: vi.fn(),
   };
   return { app: createApp({ approvals, releases }), approvals, releases };
@@ -105,6 +106,14 @@ describe("server routes", () => {
     expect(releases.get).not.toHaveBeenCalled();
   });
 
+  it("rejects an invalid public proof identifier before persistence", async () => {
+    const { app, releases } = testApp();
+    const response = await app.request("/api/public/releases/not-a-proof");
+
+    expect(response.status).toBe(400);
+    expect(releases.getByPublicId).not.toHaveBeenCalled();
+  });
+
   it("does not expose an unexpected persistence error", async () => {
     const get = vi.fn<ReleaseStore["get"]>();
     get.mockRejectedValue(new Error("private database connection details"));
@@ -119,6 +128,7 @@ describe("server routes", () => {
       releases: {
         create: vi.fn(),
         get,
+        getByPublicId: vi.fn(),
         listTransitions: vi.fn(),
       },
     });

@@ -13,12 +13,13 @@ import type {
 import {
   isJsonRequest,
   jsonError,
+  publicReleaseIdSchema,
   releaseIdSchema,
 } from "./http-validation.js";
 
 export type ReleaseStore = Pick<
   ReleaseRepository,
-  "create" | "get" | "listTransitions"
+  "create" | "get" | "getByPublicId" | "listTransitions"
 >;
 
 const createReleaseSchema = z.strictObject({
@@ -228,6 +229,33 @@ export function registerReleaseRoutes(app: Hono, releases: ReleaseStore): void {
       );
     }
     const release = await releases.get(releaseId.data);
+    if (release === null) {
+      return context.json(
+        jsonError("release_not_found", "Release not found."),
+        404,
+      );
+    }
+    const transitions = await releases.listTransitions(release.id);
+    return context.json({
+      release: presentRelease(release),
+      transitions: transitions.map(presentTransition),
+    });
+  });
+
+  app.get("/api/public/releases/:publicId", async (context) => {
+    const publicId = publicReleaseIdSchema.safeParse(
+      context.req.param("publicId"),
+    );
+    if (!publicId.success) {
+      return context.json(
+        jsonError(
+          "invalid_public_id",
+          "The public proof identifier is invalid.",
+        ),
+        400,
+      );
+    }
+    const release = await releases.getByPublicId(publicId.data);
     if (release === null) {
       return context.json(
         jsonError("release_not_found", "Release not found."),

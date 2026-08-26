@@ -1,0 +1,230 @@
+.hero {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 0.85fr) minmax(22rem, 1.15fr);
+  margin: 0 auto;
+  max-width: 94rem;
+  min-height: 35rem;
+  overflow: hidden;
+  padding: clamp(4rem, 8vw, 8rem) 2rem 3rem;
+}
+.hero-copy {
+  max-width: 46rem;
+  position: relative;
+  z-index: 2;
+}
+.hero h1 {
+  font-size: clamp(3.3rem, 6vw, 6.6rem);
+  font-weight: 680;
+  letter-spacing: -0.07em;
+  line-height: 0.92;
+  margin-top: 1.25rem;
+}
+.hero p {
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  margin-top: 1.5rem;
+  max-width: 38rem;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+.hero-proof {
+  align-self: center;
+  display: grid;
+  height: 19rem;
+  place-items: center end;
+  position: relative;
+}
+.hero-proof i {
+  background: linear-gradient(90deg, transparent, var(--violet));
+  height: 1px;
+  position: absolute;
+  right: 3.5rem;
+  transform-origin: right;
+  width: 100%;
+}
+.hero-proof i:nth-child(1) {
+  transform: rotate(19deg);
+}
+.hero-proof i:nth-child(2) {
+  transform: rotate(14deg);
+}
+.hero-proof i:nth-child(3) {
+  transform: rotate(9deg);
+}
+.hero-proof i:nth-child(4) {
+  transform: rotate(4deg);
+}
+.hero-proof i:nth-child(6) {
+  transform: rotate(-4deg);
+}
+.hero-proof i:nth-child(7) {
+  transform: rotate(-9deg);
+}
+.hero-proof i:nth-child(8) {
+  transform: rotate(-14deg);
+}
+.hero-proof i:nth-child(9) {
+  transform: rotate(-19deg);
+}
+.hero-proof span {
+  border: 6px solid var(--violet);
+  display: block;
+  height: 5rem;
+  width: 5rem;
+}
+
+.relay-section {
+  border: 1px solid var(--line);
+  margin: 0 auto;
+  max-width: 94rem;
+  padding: 1.35rem 1.4rem 0;
+}
+.relay-track {
+  align-items: center;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(5, 1fr) 0.75fr;
+  min-height: 8rem;
+  position: relative;
+}
+.relay-progress {
+  background: var(--violet);
+  height: 1px;
+  left: 2rem;
+  position: absolute;
+  right: 9%;
+  top: 4.05rem;
+}
+.relay-station {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+  min-height: 5.6rem;
+  padding: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+.station-glyph {
+  align-items: center;
+  background: var(--black);
+  border: 1px solid var(--violet);
+  color: var(--violet);
+  display: flex;
+  height: 2.8rem;
+  justify-content: center;
+  transition: 160ms ease;
+  width: 2.8rem;
+}
+.relay-station[aria-selected="true"] .station-glyph {
+  background: var(--violet);
+  color: var(--black);
+}
+.relay-station > span:last-child {
+  font-size: 0.76rem;
+  font-weight: 620;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.proof-root {
+  align-items: center;
+  color: var(--teal);
+  display: flex;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  gap: 0.65rem;
+  justify-self: end;
+  text-transform: uppercase;
+}
+.proof-root i {
+  border: 3px solid var(--teal);
+  height: 2.4rem;
+  width: 2.4rem;
+}
+.agent-inspector {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: minmax(16rem, 0.8fr) 1.2fr;
+  padding: 2rem 0;
+}
+.agent-inspector h2 {
+  font-size: clamp(1.5rem, 2vw, 2.2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  margin-top: 0.7rem;
+}
+.agent-inspector dl {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+}
+.agent-inspector dl > div {
+  border-left: 1px solid var(--line);
+  padding-left: 1rem;
+}
+.agent-inspector dt {
+  color: var(--violet);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.agent-inspector dd {
+  color: var(--lavender);
+  line-height: 1.45;
+  margin: 0.55rem 0 0;
+}
+
+.trust-section {
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(20rem, 0.75fr) 1.25fr;
+  margin: 7rem auto 0;
+  max-width: 94rem;
+}
+.trust-heading {
+  align-self: start;
+  padding: 3rem 3rem 3rem 0;
+  position: sticky;
+  top: 2rem;
+}
+.trust-heading h2 {
+  font-size: clamp(2.3rem, 4vw, 4.4rem);
+  letter-spacing: -0.06em;
+  line-height: 0.98;
+  margin-top: 1rem;
+}
+.trust-heading p {
+  color: var(--violet);
+  font-size: 1.6rem;
+  font-weight: 650;
+  margin-top: 1.3rem;
+}
+.evidence-stack {
+  border-left: 1px solid var(--line);
+}
+.evidence-sheet {
+  align-items: start;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 3rem 0.7fr 1.3fr;
+  min-height: 10rem;
+  padding: 2.2rem;
+}
+.evidence-sheet > span {
+  color: var(--violet);
+  font-family: "IBM Plex Mono", monospace;
+}
+.evidence-sheet h3 {
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  letter-spacing: -0.04em;
+}
