@@ -22,6 +22,23 @@ export {
   confirmHeroAnchor,
   prepareHeroAnchor,
 } from "./hero-writer.js";
+export {
+  AGENT_TASK_REGISTRY_ABI,
+  ARB_WASM_ABI,
+  ARB_WASM_ADDRESS,
+  STYLUS_DEPLOYER_ABI,
+  STYLUS_DEPLOYER_ADDRESS,
+} from "./stylus-abi.js";
+export {
+  confirmStylusDeployment,
+  deploymentAddressFromReceipt,
+  inspectStylusRegistry,
+} from "./stylus-reader.js";
+export {
+  isStylusDeploymentPreparationCurrent,
+  prepareStylusDeployment,
+  reconcileStylusDeployment,
+} from "./stylus-reconciliation.js";
 export type {
   ExistingHeroAnchor,
   HeroAnchorBroadcast,
@@ -32,4 +49,8 @@ export type {
   HeroProofRecord,
   PreparedHeroAnchor,
   ProofRoot,
+  PreparedStylusDeployment,
+  StylusDeploymentConfirmation,
+  StylusDeploymentReconciliation,
+  StylusRegistryInspection,
 } from "./types.js";

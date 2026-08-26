@@ -3,7 +3,9 @@ export type HeroChainErrorCode =
   | "wrong_chain"
   | "anchor_not_deployed"
   | "missing_wallet_account"
-  | "invalid_reconciliation_range";
+  | "invalid_reconciliation_range"
+  | "deployer_not_available"
+  | "insufficient_relayer_balance";
 
 export class HeroChainError extends Error {
   readonly code: HeroChainErrorCode;

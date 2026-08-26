@@ -7,6 +7,7 @@ export {
 } from "./database.js";
 export { ApprovalRepository } from "./approval-repository.js";
 export { BuildRepository } from "./build-repository.js";
+export { DeploymentRepository } from "./deployment-repository.js";
 export { PersistenceError, type PersistenceErrorCode } from "./errors.js";
 export { LeaseRepository } from "./lease-repository.js";
 export { ManifestAnchorRepository } from "./manifest-anchor-repository.js";
@@ -24,6 +25,8 @@ export type {
   CreateReleaseInput,
   CreateReleaseResult,
   DeferredReleaseError,
+  DeploymentOutcomeInput,
+  DeploymentPreparedInput,
   IdempotencyInput,
   ManifestAnchorOutcomeInput,
   ManifestAnchorPreparedInput,

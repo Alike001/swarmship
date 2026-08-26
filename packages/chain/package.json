@@ -18,6 +18,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@swarmship/domain": "workspace:^",
     "viem": "2.55.19"
   },
   "devDependencies": {

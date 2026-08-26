@@ -90,6 +90,9 @@ importers:
       "@swarmship/chain":
         specifier: workspace:^
         version: link:../../packages/chain
+      "@swarmship/deployer":
+        specifier: workspace:^
+        version: link:../../packages/deployer
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../../packages/domain
@@ -134,6 +137,9 @@ importers:
 
   packages/chain:
     dependencies:
+      "@swarmship/domain":
+        specifier: workspace:^
+        version: link:../domain
       viem:
         specifier: 2.55.19
         version: 2.55.19(typescript@7.0.2)(zod@4.4.3)
@@ -141,6 +147,21 @@ importers:
       tsx:
         specifier: 4.23.12
         version: 4.23.12
+
+  packages/deployer:
+    dependencies:
+      "@swarmship/builder":
+        specifier: workspace:^
+        version: link:../builder
+      "@swarmship/domain":
+        specifier: workspace:^
+        version: link:../domain
+      "@swarmship/verifier":
+        specifier: workspace:^
+        version: link:../verifier
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
   packages/domain:
     dependencies:
@@ -156,6 +177,9 @@ importers:
       "@swarmship/builder":
         specifier: workspace:^
         version: link:../builder
+      "@swarmship/deployer":
+        specifier: workspace:^
+        version: link:../deployer
       "@swarmship/domain":
         specifier: workspace:^
         version: link:../domain

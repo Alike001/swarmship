@@ -76,6 +76,7 @@ export const deploymentToolResultSchema = z.strictObject({
     "manifest_anchor_reconciled_present",
     "deployment_reconciled_missing",
     "deployment_reconciled_present",
+    "deployment_verification_rejected",
   ]),
 });
 

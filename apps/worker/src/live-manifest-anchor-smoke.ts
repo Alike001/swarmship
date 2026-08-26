@@ -27,6 +27,8 @@ import { processOneManifestAnchor } from "./manifest-anchor-processor.js";
 
 const NOW = 1_800_000_000;
 const PUBLIC_ID = "release_manifest_anchor_smoke_v1";
+const EXPECTED_ROOT =
+  "0x069cac31c40fd9c624c80e8320ee30e741e4a141229368b17ea2944ff10454d3";
 const databaseUrl =
   process.env.TEST_DATABASE_URL ??
   "postgres://postgres@127.0.0.1:55432/postgres";
@@ -136,6 +138,9 @@ try {
     });
   }
   const request = await approvals.getRequest(releaseId, NOW + 2);
+  if (request.digest !== EXPECTED_ROOT) {
+    throw new Error("The rebuilt release differs from the anchored manifest.");
+  }
 
   const model = anchorModel();
   const process = () =>

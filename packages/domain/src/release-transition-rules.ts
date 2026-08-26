@@ -165,6 +165,12 @@ export const RELEASE_TRANSITION_RULES = {
     to: "deployed_unverified",
     requiresReconciliation: "deployment",
   },
+  deployment_verification_rejected: {
+    actor: "deployment",
+    from: ["reconciliation_required"],
+    to: "approved_not_deployed",
+    requiresReconciliation: "deployment",
+  },
   receipt_anchor_reconciled_missing: {
     actor: "witness",
     from: ["reconciliation_required"],

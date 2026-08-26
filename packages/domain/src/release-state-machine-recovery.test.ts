@@ -78,6 +78,12 @@ describe("release state reconciliation", () => {
       "deployed_unverified",
     ],
     [
+      "deployment",
+      "deployment_verification_rejected",
+      "deployment",
+      "approved_not_deployed",
+    ],
+    [
       "receipt_anchor",
       "receipt_anchor_reconciled_missing",
       "witness",

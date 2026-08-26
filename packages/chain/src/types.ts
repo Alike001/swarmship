@@ -1,4 +1,5 @@
 import type { Address, Hash, Hex } from "viem";
+import type { TaskRegistrySpecV1 } from "@swarmship/domain/release";
 
 export type ProofRoot = `0x${string}`;
 
@@ -62,3 +63,54 @@ export type HeroDeploymentInspection = {
   chainId: number;
   bytecode: Hex;
 };
+
+export type PreparedStylusDeployment = {
+  nonce: number;
+  sender: Address;
+  startBlock: bigint;
+};
+
+export type StylusRegistryInspection = {
+  activatedVersion: number;
+  address: Address;
+  bytecode: Hex;
+  configuration: Omit<TaskRegistrySpecV1, "contractFamily">;
+  handoffCount: bigint;
+};
+
+export type StylusDeploymentConfirmation =
+  | {
+      status: "confirmed";
+      blockNumber: bigint;
+      inspection: StylusRegistryInspection;
+      transactionHash: Hash;
+    }
+  | { status: "reverted"; blockNumber: bigint; transactionHash: Hash }
+  | {
+      status: "unknown";
+      reason:
+        | "receipt_unavailable"
+        | "deployment_event_missing"
+        | "address_mismatch"
+        | "registry_read_failed"
+        | "configuration_mismatch";
+      transactionHash: Hash;
+    };
+
+export type StylusDeploymentReconciliation =
+  | {
+      status: "present";
+      contractAddress: Address;
+      observedBlock: bigint;
+      transactionHash: Hash;
+    }
+  | { status: "missing"; observedBlock: bigint }
+  | {
+      status: "inconclusive";
+      observedBlock: bigint | null;
+      reason:
+        | "observation_block_not_reached"
+        | "rpc_unavailable"
+        | "transaction_not_found"
+        | "configuration_mismatch";
+    };

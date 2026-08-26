@@ -13,7 +13,15 @@ import {
   prepareHeroAnchor,
   reconcileHeroAnchor,
   verifyHeroProof,
+  confirmStylusDeployment,
+  isStylusDeploymentPreparationCurrent,
+  prepareStylusDeployment,
+  reconcileStylusDeployment,
 } from "@swarmship/chain";
+import {
+  runApprovedStylusDeployment,
+  verifyApprovedStylusDeployment,
+} from "@swarmship/deployer";
 import {
   parseWorkerChainEnvironment,
   parseWorkerEnvironment,
@@ -24,12 +32,18 @@ import {
   createDatabase,
   LeaseRepository,
   ManifestAnchorRepository,
+  DeploymentRepository,
   runMigrations,
   SpecificationRepository,
   VerificationRepository,
 } from "@swarmship/persistence";
+import {
+  reconstructApprovedArtifact,
+  removeSourceWorkspace,
+} from "@swarmship/verifier";
 
 import { processOneBuild } from "./build-processor.js";
+import { processOneDeployment } from "./deployment-processor.js";
 import { getWorkerHealth } from "./health.js";
 import { processOneManifestAnchor } from "./manifest-anchor-processor.js";
 import { processOneSpecification } from "./specification-processor.js";
@@ -79,6 +93,7 @@ const agents = createSwarmShipAgents({
   model: configuredModel.model,
 });
 const builds = new BuildRepository(database);
+const deployments = new DeploymentRepository(database);
 const leases = new LeaseRepository(database);
 const manifestAnchors = new ManifestAnchorRepository(database);
 const specifications = new SpecificationRepository(database);
@@ -156,6 +171,106 @@ try {
               workerId,
             })
           : { status: "idle" as const };
+      const deploymentResult =
+        result.status === "idle" &&
+        buildResult.status === "idle" &&
+        verificationResult.status === "idle" &&
+        manifestAnchorResult.status === "idle"
+          ? await processOneDeployment({
+              confirm: (transactionHash, contractAddress, release) => {
+                if (release.specification === null) {
+                  throw new Error("Approved specification is missing.");
+                }
+                return confirmStylusDeployment(
+                  heroPublicClient,
+                  transactionHash,
+                  contractAddress,
+                  release.specification,
+                );
+              },
+              deploy: (release, nowUnixSeconds) => {
+                if (
+                  release.specification === null ||
+                  release.buildEvidence === null ||
+                  release.verificationEvidence === null
+                ) {
+                  throw new Error("Approved deployment evidence is missing.");
+                }
+                return runApprovedStylusDeployment({
+                  buildEvidence: release.buildEvidence,
+                  nowUnixSeconds,
+                  privateKey: chainEnvironment.RELAYER_PRIVATE_KEY,
+                  rpcUrl: chainEnvironment.ARBITRUM_SEPOLIA_RPC_URL,
+                  specification: release.specification,
+                  verificationEvidence: release.verificationEvidence,
+                });
+              },
+              deployments,
+              leaseSeconds: environment.WORKER_LEASE_SECONDS,
+              leases,
+              model: configuredModel.model,
+              prepareArtifact: async (release, nowUnixSeconds) => {
+                if (
+                  release.specification === null ||
+                  release.buildEvidence === null ||
+                  release.verificationEvidence === null
+                ) {
+                  throw new Error("Approved deployment evidence is missing.");
+                }
+                const workspace = await reconstructApprovedArtifact(
+                  release.buildEvidence,
+                  release.verificationEvidence,
+                  release.specification,
+                  nowUnixSeconds,
+                );
+                await removeSourceWorkspace(workspace.root);
+                return workspace.artifactHash;
+              },
+              prepareChain: () => {
+                const account = heroWalletClient.account;
+                if (account === undefined) {
+                  throw new Error("Deployment relayer account is missing.");
+                }
+                return prepareStylusDeployment(
+                  heroPublicClient,
+                  account.address,
+                );
+              },
+              reconcile: (input, release) => {
+                if (release.specification === null) {
+                  throw new Error("Approved specification is missing.");
+                }
+                return reconcileStylusDeployment(heroPublicClient, {
+                  ...input,
+                  specification: release.specification,
+                });
+              },
+              retrySeconds: environment.WORKER_RETRY_SECONDS,
+              verify: (release, transactionHash, nowUnixSeconds) => {
+                if (
+                  release.specification === null ||
+                  release.buildEvidence === null ||
+                  release.verificationEvidence === null
+                ) {
+                  throw new Error("Approved deployment evidence is missing.");
+                }
+                return verifyApprovedStylusDeployment({
+                  buildEvidence: release.buildEvidence,
+                  nowUnixSeconds,
+                  rpcUrl: chainEnvironment.ARBITRUM_SEPOLIA_RPC_URL,
+                  specification: release.specification,
+                  transactionHash,
+                  verificationEvidence: release.verificationEvidence,
+                });
+              },
+              validateChain: (prepared) =>
+                isStylusDeploymentPreparationCurrent(
+                  heroPublicClient,
+                  prepared,
+                ),
+              workerId,
+            })
+          : { status: "idle" as const };
       if (result.status !== "idle") {
         console.log("SwarmShip worker step", result);
       } else if (buildResult.status !== "idle") {
@@ -164,6 +279,8 @@ try {
         console.log("SwarmShip worker step", verificationResult);
       } else if (manifestAnchorResult.status !== "idle") {
         console.log("SwarmShip worker step", manifestAnchorResult);
+      } else if (deploymentResult.status !== "idle") {
+        console.log("SwarmShip worker step", deploymentResult);
       }
     } catch (error) {
       console.error("SwarmShip worker loop error", {

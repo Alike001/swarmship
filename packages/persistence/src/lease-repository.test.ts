@@ -95,6 +95,20 @@ describe("LeaseRepository", () => {
     expect(claim?.release.id).toBe(ready.release.id);
   });
 
+  it("claims only the exact release requested by a bounded runner", async () => {
+    await releases.create({ originalRequest: "Other" });
+    const target = await releases.create({ originalRequest: "Target" });
+
+    const claim = await leases.claimById(
+      target.release.id,
+      "bounded-worker",
+      60,
+      ["created"],
+    );
+
+    expect(claim?.release.id).toBe(target.release.id);
+  });
+
   it("claims only the reconciliation kind requested by the worker", async () => {
     const deployment = await releases.create({ originalRequest: "Deployment" });
     const manifest = await releases.create({ originalRequest: "Manifest" });

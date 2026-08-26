@@ -52,6 +52,49 @@ function validateDeferredError(error: DeferredReleaseError): void {
 export class LeaseRepository {
   constructor(private readonly database: Database) {}
 
+  async claimById(
+    releaseId: string,
+    workerId: string,
+    durationSeconds: number,
+    states: readonly ReleaseState[] = claimableStates,
+    reconciliationKinds?: readonly ReconciliationKind[],
+  ): Promise<ReleaseLease | null> {
+    validateDuration(durationSeconds);
+    validateStates(states);
+    if (
+      reconciliationKinds !== undefined &&
+      (reconciliationKinds.length === 0 ||
+        reconciliationKinds.some(
+          (kind) => !RECONCILIATION_KINDS.includes(kind),
+        ))
+    ) {
+      throw new RangeError(
+        "At least one valid reconciliation kind is required.",
+      );
+    }
+    const token = randomUUID();
+    const [release] = await this.database<ReleaseRow[]>`
+      UPDATE releases
+      SET lease_owner = ${workerId},
+          lease_token = ${token},
+          lease_expires_at = clock_timestamp() + make_interval(secs => ${durationSeconds}),
+          updated_at = clock_timestamp()
+      WHERE id = ${releaseId}
+        AND state = ANY(${this.database.array([...states])})
+        AND (
+          state <> 'reconciliation_required'
+          OR ${reconciliationKinds === undefined}
+          OR reconciliation_kind = ANY(${this.database.array([
+            ...(reconciliationKinds ?? RECONCILIATION_KINDS),
+          ])})
+        )
+        AND next_attempt_at <= clock_timestamp()
+        AND (lease_expires_at IS NULL OR lease_expires_at <= clock_timestamp())
+      RETURNING *
+    `;
+    return release === undefined ? null : { release, token };
+  }
+
   async claimNext(
     workerId: string,
     durationSeconds: number,

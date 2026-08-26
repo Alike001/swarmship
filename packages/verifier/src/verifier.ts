@@ -1,15 +1,3 @@
-import { createHash } from "node:crypto";
-import {
-  mkdir,
-  mkdtemp,
-  readFile,
-  realpath,
-  rm,
-  writeFile,
-} from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve, sep } from "node:path";
-
 import {
   validateBuildEvidence,
   type BuildEvidenceV1,
@@ -31,14 +19,17 @@ import {
   type VerificationCheck,
   type VerificationEvidenceV1,
 } from "./verification-model.js";
+import {
+  assertSourceWorkspaceUnchanged,
+  createSourceWorkspace,
+  hashWasmArtifact,
+  readSourceWorkspaceArtifact,
+  removeSourceWorkspace,
+} from "./source-workspace.js";
 
 export type VerificationOptions = {
   execute?: CommandExecutor;
 };
-
-function hashBytes(tag: string, value: Uint8Array): `0x${string}` {
-  return `0x${createHash("sha256").update(tag).update("\0").update(value).digest("hex")}`;
-}
 
 function normalizeVersion(result: CommandResult): string {
   const version = result.stdout.trim().replaceAll(/\s+/g, " ");
@@ -81,42 +72,6 @@ async function runCommand(
   }
 }
 
-async function writeWorkspace(
-  root: string,
-  evidence: BuildEvidenceV1,
-): Promise<void> {
-  const canonicalRoot = await realpath(root);
-  for (const file of evidence.sourceFiles) {
-    const destination = resolve(canonicalRoot, file.path);
-    if (!destination.startsWith(`${canonicalRoot}${sep}`)) {
-      throw new VerifierError(
-        "workspace_invalid",
-        "The verification source contains an unsafe path.",
-      );
-    }
-    await mkdir(dirname(destination), { recursive: true, mode: 0o700 });
-    await writeFile(destination, file.content, {
-      encoding: "utf8",
-      mode: 0o600,
-    });
-  }
-}
-
-async function assertWorkspaceUnchanged(
-  root: string,
-  evidence: BuildEvidenceV1,
-): Promise<void> {
-  for (const file of evidence.sourceFiles) {
-    const current = await readFile(resolve(root, file.path), "utf8");
-    if (current !== file.content) {
-      throw new VerifierError(
-        "workspace_invalid",
-        "A verification command changed the accepted source bundle.",
-      );
-    }
-  }
-}
-
 function passed(result: CommandResult): boolean {
   return result.exitCode === 0 && !result.timedOut && !result.limitExceeded;
 }
@@ -141,10 +96,9 @@ export async function verifyTaskRegistry(
     );
   }
   const execute = options.execute ?? executeFixedCommand;
-  const workspace = await mkdtemp(join(tmpdir(), "swarmship-verify-"));
+  const workspace = await createSourceWorkspace(buildEvidence);
 
   try {
-    await writeWorkspace(workspace, buildEvidence);
     const [rustc, cargo, cargoStylus] = await Promise.all([
       runCommand(execute, workspace, "rustc", ["--version"], 30_000),
       runCommand(execute, workspace, "cargo", ["--version"], 30_000),
@@ -178,7 +132,7 @@ export async function verifyTaskRegistry(
       if (!passed(result)) break;
     }
 
-    await assertWorkspaceUnchanged(workspace, buildEvidence);
+    await assertSourceWorkspaceUnchanged(workspace, buildEvidence);
     let artifactBase64: string | null = null;
     let artifactHash: `0x${string}` | null = null;
     if (
@@ -187,17 +141,9 @@ export async function verifyTaskRegistry(
       )
     ) {
       try {
-        const artifact = await readFile(
-          resolve(
-            workspace,
-            "target/wasm32-unknown-unknown/release/agent_task_registry.wasm",
-          ),
-        );
-        if (artifact.length < 1 || artifact.length > 500_000) {
-          throw new Error("unsafe artifact size");
-        }
+        const artifact = await readSourceWorkspaceArtifact(workspace);
         artifactBase64 = artifact.toString("base64");
-        artifactHash = hashBytes("swarmship-wasm-artifact-v1", artifact);
+        artifactHash = hashWasmArtifact(artifact);
       } catch {
         artifactBase64 = null;
         artifactHash = null;
@@ -240,6 +186,6 @@ export async function verifyTaskRegistry(
       version: VERIFICATION_VERSION,
     };
   } finally {
-    await rm(workspace, { force: true, recursive: true });
+    await removeSourceWorkspace(workspace);
   }
 }

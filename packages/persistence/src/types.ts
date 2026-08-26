@@ -9,6 +9,7 @@ import type {
   TaskRegistrySpecV1,
 } from "@swarmship/domain/release";
 import type { BuildEvidenceV1 } from "@swarmship/builder";
+import type { DeploymentAttempt } from "@swarmship/deployer";
 import type { ReleaseState } from "@swarmship/domain";
 import type { VerificationEvidenceV1 } from "@swarmship/verifier";
 import type { ManifestAnchorAttempt } from "./manifest-anchor-model.js";
@@ -27,6 +28,7 @@ export type ReleaseRow = {
   verificationEvidence: VerificationEvidenceV1 | null;
   manifestApproval: ManifestApprovalV1 | null;
   manifestAnchorAttempt: ManifestAnchorAttempt | null;
+  deploymentAttempt: DeploymentAttempt | null;
   safeError: unknown | null;
   leaseOwner: string | null;
   leaseToken: string | null;
@@ -144,6 +146,25 @@ export type ManifestAnchorPreparedInput = {
 };
 
 export type ManifestAnchorOutcomeInput = {
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type DeploymentPreparedInput = {
+  attempt: DeploymentAttempt;
+  command: ReleaseTransitionCommand;
+  leaseToken: string;
+  nowUnixSeconds: number;
+  releaseId: string;
+  summary: string;
+  workerId: string;
+};
+
+export type DeploymentOutcomeInput = {
   command: ReleaseTransitionCommand;
   leaseToken: string;
   nowUnixSeconds: number;
